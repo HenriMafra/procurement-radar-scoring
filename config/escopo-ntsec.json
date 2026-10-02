@@ -1,0 +1,2595 @@
+{
+  "_instrucao": "CEREBRO DO FILTRO ENTERPRISECORE. Tudo em minusculo e SEM acento (o pipeline normaliza o texto igual). 'fabricantes' = marcas reais (deteccao no texto + sugestao). 'categorias' = palavras-chave por solucao (dispara relevancia + sugere fabricantePadrao/solucao). 'palavrasFracas' = termos genericos (entram como confianca Baixa). 'exclusoes' = falsos positivos (so descartam quando NAO ha sinal forte). Politica: melhor sobrar do que faltar.",
+  "_instrucaoPesos": "MOTOR DE SCORE (0-100). O item NAO para no primeiro sinal: soma TODOS. Mexa aqui para calibrar o ranking sem tocar em codigo. Os campos 'nome' de 'faixas' PODEM ter acento (sao rotulos de tela, nao entram na normalizacao). 'faixas' precisa ficar em ordem DECRESCENTE de 'min'.",
+  "_instrucaoSituacoes": "Quais valores da coluna SITUACAO do boletim entram no radar. Comparacao exata, sem acento e sem diferenciar maiuscula. Medido nos boletins de 28/07: NOVA=62, URGENTE=39, PRORROGADA=16, SUSPENSA SINE DIE=3, RETIFICACAO=1. Com apenas 'nova' voce descarta 49% das linhas - inclusive URGENTE e PRORROGADA, que continuam abertas para proposta. Para passar a considera-las, basta acrescentar aqui.",
+  "situacoesAceitas": [
+    "nova"
+  ],
+  "_notaCalibragem": "Calibrado em 18/08/2026 contra 93.253 contratacoes federais reais coletadas do dadosabertos.compras.gov.br. Metrica usada por palavra: quantas vezes dispara, em que fracao dispara SOZINHA (sem outra palavra do dicionario no mesmo objeto) e em que fracao aparece junto de um termo de nucleo. Palavra que dispara muito, quase sempre sozinha e quase nunca junto de nucleo e carregadora de ruido. Foi assim que \"servidores\" (1187 disparos, 89% sozinha, e na amostra manual 164 de 400 eram SERVIDOR PUBLICO, a pessoa) e \"containers\" (43 disparos, 100% sozinha, todos conteiner fisico) foram descobertos. ATENCAO: so 56 das 431 palavras disparam 15+ vezes nessa base - o resto nao foi testado por falta de amostra, nao por estar errado.",
+  "pesos": {
+    "categoriaPrimeira": 34,
+    "categoriaAdicional": 10,
+    "categoriaMaxAdicional": 30,
+    "parceiroPrimeiro": 26,
+    "parceiroAdicional": 7,
+    "parceiroMaxAdicional": 14,
+    "concorrentePrimeiro": 22,
+    "concorrenteAdicional": 5,
+    "concorrenteMaxAdicional": 10,
+    "palavraFraca": 4,
+    "palavraFracaMax": 8,
+    "projetoIntegrado": 8,
+    "prazoConfortavel": 5,
+    "prazoApertado": -6,
+    "prazoVencido": -25,
+    "periferico": -30,
+    "termoExcluido": -70,
+    "diasPrazoApertado": 3,
+    "diasPrazoConfortavel": 7,
+    "contextoForaEscopo": -45,
+    "densidadeObjetoLongo": 2500,
+    "densidadeFatorLongo": 0.4,
+    "densidadeObjetoMedio": 1200,
+    "densidadeFatorMedio": 0.6,
+    "densidadeConcentrada": 4,
+    "densidadeFatorConcentrado": 1.35,
+    "valorMuitoAlto": 12,
+    "valorAlto": 8,
+    "valorMedio": 4,
+    "valorBaixo": -6,
+    "loteMarginal": 0.25,
+    "loteParcial": 0.5,
+    "loteFatorParcial": 0.7,
+    "loteDedicado": 0.7,
+    "foraDominanteRazao": 2,
+    "foraNaCabecaChars": 180,
+    "expressaoJanelaChars": 40
+  },
+  "_instrucaoLote": "CENTRALIDADE NO LOTE. O objeto do Conlicitacao vem numerado (1 - ... 2 - ...). O motor conta em quantos itens do lote a palavra do escopo aparece. Abaixo de 'loteMarginal' o item e acessorio (pontos caem para densidadeFatorLongo); acima de 'loteDedicado' o edital e nosso (ganha densidadeFatorConcentrado). Vale mais que a contagem por caractere e substitui ela quando o lote tem 3+ itens.",
+  "_instrucaoContexto": "Termos que denunciam que o edital e de OUTRA area. Quando aparecem 2 ou mais deles E o sinal de escopo e fraco (ate 2 palavras-chave), o item leva a penalidade 'contextoForaEscopo'. Isso resolve o caso classico: edital de estudio de radio com 6000 caracteres que dispara so por 'switch' no meio de mesas de som. Nao usar termos ambiguos que aparecem em datacenter (ex.: 'ar condicionado', 'nobreak', 'cabeamento'). TRAVA DO PARCEIRO AGORA E PROPORCIONAL (18/08/2026). Marca parceira citada protegia o edital de forma ABSOLUTA - existe porque um CFTV legitimo da Marinha foi zerado por engano. Mas era demais: um RP de projetores, televisores, microfones e webcams do Poder Judiciario tinha 11 termos de outra area contra 2 palavras de escopo, e escapava inteiro porque a palavra 'dell' aparecia em 'Memoria Ram aplicacao: dell optiplex 3060' - memoria de desktop. Agora, quando os termos de outra area superam as palavras de escopo em 'foraDominanteRazao' vezes ou mais, a marca citada de passagem deixa de proteger. No caso da Marinha a razao e baixa e a trava continua valendo. O QUE SE COMPRA ESTA NO COMECO DO OBJETO (19/08/2026). Edital declara o objeto na abertura e so depois detalha caracteristicas. Se um termo de OUTRA AREA aparece nos primeiros \"foraNaCabecaChars\" caracteres, e ele que esta sendo comprado - a penalidade entra mesmo que o resto do texto tenha muita palavra nossa. Caso que expos isso: \"Contratacao de solucao de conectividade por meio de Link Dedicado a Internet IP Dedicado, com protecao integrada contra ataques de negacao de servico Anti DDoS\" - 3 termos fora contra 4 do escopo, entao a regra por proporcao nao disparava e o edital ficava em 81. O Anti-DDoS ali e acessorio do link, e link cabeado nao e escopo da ENTERPRISECORE.",
+  "contextosForaEscopo": [
+    "estudio de radio",
+    "estudio de tv",
+    "mesa de som",
+    "microfone",
+    "microfones",
+    "fone de ouvido",
+    "caixa acustica",
+    "iluminacao cenica",
+    "refletor",
+    "camera fotografica",
+    "audio e video",
+    "sonorizacao",
+    "mobiliario",
+    "cadeira",
+    "poltrona",
+    "mesa de escritorio",
+    "divisoria",
+    "veiculo",
+    "veiculos",
+    "pneu",
+    "pneus",
+    "combustivel",
+    "oleo lubrificante",
+    "manutencao de frota",
+    "medicamento",
+    "medicamentos",
+    "material hospitalar",
+    "odontologico",
+    "laboratorial",
+    "reagente",
+    "obra civil",
+    "reforma predial",
+    "construcao civil",
+    "pavimentacao",
+    "alvenaria",
+    "pintura predial",
+    "genero alimenticio",
+    "alimenticios",
+    "merenda",
+    "hortifruti",
+    "carne",
+    "panificacao",
+    "uniforme",
+    "fardamento",
+    "calcado",
+    "tecido",
+    "papelaria",
+    "material de expediente",
+    "cartucho",
+    "toner",
+    "impressao grafica",
+    "jardinagem",
+    "poda",
+    "paisagismo",
+    "dedetizacao",
+    "desratizacao",
+    "kvm",
+    "chaveador",
+    "apresentador multimidia",
+    "passador de slides",
+    "cabo extensor",
+    "cabo usb",
+    "adaptador conector",
+    "mouse pad",
+    "dock station",
+    "estacao de ancoragem",
+    "placa de captura",
+    "divisor hdmi",
+    "gabinete ssd",
+    "cartao de memoria",
+    "webcam",
+    "web cam",
+    "videoconferencia",
+    "videoconferencias",
+    "sala de reuniao",
+    "projetor",
+    "tela de projecao",
+    "zoom meetings",
+    "microsoft teams",
+    "google meet",
+    "pabx",
+    "voip",
+    "telefonia",
+    "tarifacao",
+    "central telefonica",
+    "ramal",
+    "ramais",
+    "troncos",
+    "teclado",
+    "mouse",
+    "kit de teclado",
+    "teclado e mouse",
+    "mousepad",
+    "sala cofre",
+    "sala-cofre",
+    "fm 200",
+    "fm200",
+    "cilindro de gas",
+    "cilindros de gas",
+    "recarga de cilindro",
+    "teste hidrostatico",
+    "banco de baterias",
+    "bancos de baterias",
+    "grupo gerador",
+    "ar condicionado de precisao",
+    "combate a incendio",
+    "piso elevado",
+    "projetor multimidia",
+    "projetores",
+    "audio video",
+    "sistema de audio",
+    "sistema de som",
+    "televisor",
+    "smart tv",
+    "equipamento audiovisual",
+    "audiovisual",
+    "cabo hdmi",
+    "suporte para tv",
+    "certificado digital a3",
+    "certificado digital a1",
+    "e-cpf",
+    "e-cnpj",
+    "emissao de certificado digital",
+    "token criptografico usb",
+    "container sanitario",
+    "containers sanitarios",
+    "container almoxarifado",
+    "locacao de container",
+    "conteiner",
+    "link dedicado",
+    "ip dedicado",
+    "link de internet",
+    "links de internet",
+    "acesso a internet",
+    "acesso dedicado",
+    "internet dedicada",
+    "internet via fibra",
+    "banda larga",
+    "enlace dedicado",
+    "enlaces dedicados",
+    "provedor de internet",
+    "servico de internet",
+    "conexao de internet",
+    "circuito de dados",
+    "servico movel pessoal",
+    "telefonia movel",
+    "videowall",
+    "video wall",
+    "painel de led",
+    "led wall",
+    "visualizacao profissional de imagens",
+    "desktop",
+    "desktops",
+    "microcomputador de mesa",
+    "computador de mesa",
+    "desktop intermediario",
+    "estacao de trabalho",
+    "all in one",
+    "links dedicados",
+    "link de internet via radio",
+    "conectividade corporativa a internet",
+    "celular",
+    "celulares",
+    "aparelho telefonico",
+    "aparelhos telefonicos",
+    "telefone celular",
+    "smartphone",
+    "smartphones",
+    "tablet",
+    "tablets",
+    "iphone",
+    "galaxy",
+    "ipad",
+    "chip de dados",
+    "linha telefonica",
+    "aparelho movel",
+    "dispositivo movel",
+    "engenharia clinica",
+    "complexo hospitalar",
+    "equipamento medico",
+    "equipamentos medicos",
+    "insumo hospitalar",
+    "uso hospitalar",
+    "ambulatorial",
+    "odontologic",
+    "suprimentos de ti",
+    "liferay",
+    "portal institucional",
+    "gestao de conteudo",
+    "cms",
+    "content management system",
+    "portal corporativo",
+    "plataforma de portal",
+    "fita",
+    "fitas",
+    "lto",
+    "unidade de fita",
+    "unidades de fita",
+    "biblioteca de fitas",
+    "backup em fita",
+    "drive de fita",
+    "robo de fita",
+    "tape library",
+    "cartucho lto"
+  ],
+  "_instrucaoEmail": "Cabecalho e rodape do modelo de e-mail (.OFT). 'regiao' e o rotulo que aparece ao lado da data (ex.: MATRIZ | SUL). 'rodapeNota' e a observacao antes da assinatura. 'assinatura' e a linha final do comunicado.",
+  "email": {
+    "titulo": "📋 Radar de Publicações",
+    "regiao": "MATRIZ | SUL",
+    "rodapeNota": "Como as publicações podem ocorrer durante todo o dia, o corte será realizado em D-1.",
+    "assinatura": "Comunicado interno · Diretoria e Lideranças Executivas · Enterprise IT Group"
+  },
+  "_instrucaoEstados": "Atalho de regiao no filtro de estados da tela. Use a sigla da UF. Deixe a lista vazia para nao mostrar o atalho. O 'nome' e o que aparece no botao.",
+  "estadosPreferidos": {
+    "nome": "Minha região",
+    "ufs": [
+      "DF",
+      "GO",
+      "PR",
+      "SC",
+      "RS"
+    ]
+  },
+  "_notaCores": "Paleta washi (tinta e terra), alinhada com a interface. Evitar cores saturadas/neon.",
+  "faixas": [
+    {
+      "min": 75,
+      "nome": "Prioridade Máxima",
+      "cor": "#2F6B41",
+      "acao": "Entrar. Sinal forte de portfólio ENTERPRISECORE — separar time e montar proposta."
+    },
+    {
+      "min": 55,
+      "nome": "Alta",
+      "cor": "#5F7A3C",
+      "acao": "Vale disputar. Ler o edital completo e confirmar exigências de marca."
+    },
+    {
+      "min": 35,
+      "nome": "Média",
+      "cor": "#835507",
+      "acao": "Depende do edital. Checar se o escopo técnico bate com o que revendemos."
+    },
+    {
+      "min": 18,
+      "nome": "Baixa",
+      "cor": "#A05A22",
+      "acao": "Provavelmente fora. Só olhar se sobrar tempo."
+    },
+    {
+      "min": 0,
+      "nome": "Descartar",
+      "cor": "#C0451C",
+      "acao": "Fora do escopo ou prazo perdido. Não gastar time comercial."
+    }
+  ],
+  "_instrucaoCategorias": "Palavras-chave por solucao, escritas como os editais brasileiros costumam escrever (Lei 14.133). Tudo em MINUSCULO e SEM ACENTO - o pipeline normaliza o texto do edital do mesmo jeito antes de comparar. O casamento e por PALAVRA INTEIRA: 'pam' nao casa dentro de 'equipamento'. Termo com espaco nas pontas (ex.: ' hsm ') forca palavra isolada. Ordem das categorias nao importa. Revisado em 14/08/2026 a partir do historico real de vendas da ENTERPRISECORE.",
+  "categorias": [
+    {
+      "solucao": "NGFW / Firewall / IPS",
+      "fabricantePadrao": "Check Point",
+      "palavrasChave": [
+        "firewall",
+        "firewalls",
+        "ngfw",
+        "next generation firewall",
+        "proxima geracao",
+        " utm ",
+        "prevencao de intrusao",
+        "sistema de prevencao de intrusao",
+        "deteccao de intrusao",
+        " ids ",
+        "gateway de seguranca",
+        "protecao de perimetro",
+        "seguranca de perimetro",
+        "sd-wan",
+        "sdwan",
+        "controle de aplicacoes",
+        "filtro de pacotes",
+        "inspecao profunda de pacotes",
+        "deep packet inspection",
+        "sandbox",
+        "sandboxing",
+        "antibot",
+        "anti-bot",
+        "ameacas avancadas",
+        "protecao contra ameacas",
+        "ips ids",
+        "ids ips",
+        "sistema de deteccao de intrusao",
+        "firewall de proxima geracao",
+        "checks points",
+        "checks point",
+        "check points",
+        "check point",
+        "chekpoints",
+        "chekpoint",
+        "firewals",
+        "firewal",
+        "fortinets",
+        "fortinet",
+        "fortis nets",
+        "fortis net",
+        "forti nets",
+        "forti net",
+        "fort nets",
+        "fort net",
+        "fortnets",
+        "fortnet",
+        "ipss",
+        "ips",
+        "nexts generations firewalls",
+        "nexts generations firewall",
+        "nexts generations firewals",
+        "nexts generations firewal",
+        "nexts generation firewalls",
+        "nexts generation firewall",
+        "nexts generation firewals",
+        "nexts generation firewal",
+        "next generations firewalls",
+        "next generations firewall",
+        "next generations firewals",
+        "next generations firewal",
+        "next generation firewalls",
+        "next generation firewals",
+        "next generation firewal",
+        "nexts generations threats preventions",
+        "nexts generations threats prevention",
+        "nexts generations threat preventions",
+        "nexts generations threat prevention",
+        "nexts generation threats preventions",
+        "nexts generation threats prevention",
+        "nexts generation threat preventions",
+        "nexts generation threat prevention",
+        "next generations threats preventions",
+        "next generations threats prevention",
+        "next generations threat preventions",
+        "next generations threat prevention",
+        "next generation threats preventions",
+        "next generation threats prevention",
+        "next generation threat preventions",
+        "next generation threat prevention",
+        "ngfws",
+        "nsxs",
+        "nsx",
+        "paloaltos",
+        "paloalto",
+        "prodecao de perimetros",
+        "prodecao de perimetro",
+        "prodecoes de perimetros",
+        "prodecoes de perimetro"
+      ]
+    },
+    {
+      "_nota": "REMOVIDO 'estacao de trabalho': em edital brasileiro isso significa DESKTOP, nao seguranca de endpoint. Estava fazendo compra de computador com monitor pontuar 43 como se fosse EDR. Virou palavra fraca (vale 4 pontos, nao 34).",
+      "solucao": "Endpoint / EDR / XDR",
+      "fabricantePadrao": "TrendMicro",
+      "palavrasChave": [
+        "endpoint",
+        "endpoints",
+        " edr ",
+        " xdr ",
+        " mdr ",
+        "antimalware",
+        "anti-malware",
+        "antivirus corporativo",
+        "protecao de estacao",
+        "protecao de endpoint",
+        "protecao de endpoints",
+        "deteccao e resposta",
+        "endpoint detection",
+        "antiransomware",
+        "anti-ransomware",
+        "protecao contra ransomware",
+        "seguranca de estacoes",
+        "antivirus",
+        "solucao de antivirus",
+        "protecao de estacoes",
+        "antimalwares",
+        "antis malwares",
+        "antis malware",
+        "anti malwares",
+        "antis virus",
+        "antis viru",
+        "anti virus",
+        "anti viru",
+        "antiviru",
+        "edre",
+        "malwares",
+        "malware",
+        "patch management",
+        "patch manager",
+        "gerenciamento de atualizacoes",
+        "gestao de patches",
+        "manageengine",
+        "manage engine",
+        "atualizacoes de seguranca"
+      ]
+    },
+    {
+      "solucao": "SSE / Proxy / ZTNA / SASE",
+      "fabricantePadrao": "Zscaler",
+      "palavrasChave": [
+        "secure web gateway",
+        "proxy web",
+        "proxy reverso",
+        " casb ",
+        "sase",
+        " sse ",
+        "ztna",
+        "zero trust",
+        "confianca zero",
+        "filtro de conteudo web",
+        "filtro de url",
+        "navegacao segura",
+        "acesso remoto seguro",
+        "borda de servico de acesso"
+      ]
+    },
+    {
+      "solucao": "Seguranca de E-mail",
+      "fabricantePadrao": "TrendMicro",
+      "palavrasChave": [
+        "seguranca de e-mail",
+        "seguranca de email",
+        "anti-spam",
+        "antispam",
+        "protecao de e-mail",
+        "gateway de e-mail",
+        "filtro de e-mail",
+        "phishing",
+        "anti-phishing",
+        "protecao de correio eletronico"
+      ]
+    },
+    {
+      "solucao": "WAF / ADC / DDoS",
+      "fabricantePadrao": "F5 Networks",
+      "palavrasChave": [
+        " waf ",
+        "web application firewall",
+        "firewall de aplicacao",
+        "firewall de aplicacao web",
+        "balanceador",
+        "balanceador de carga",
+        "balanceamento de carga",
+        "application delivery",
+        " adc ",
+        "anti-ddos",
+        "antiddos",
+        "protecao contra ddos",
+        "mitigacao de ddos",
+        "negacao de servico",
+        "load balancer",
+        "proxy de aplicacao",
+        "publicacao de aplicacoes",
+        "api gateway",
+        "seguranca de api",
+        "protecao de api",
+        "cdn",
+        "rede de distribuicao de conteudos",
+        "content delivery network",
+        "protecao de sitios web",
+        "balancears",
+        "balancear",
+        "balanceamentos",
+        "balanceamento",
+        "big ip",
+        "bigips",
+        "bigip",
+        "big iqs",
+        "big iq",
+        "bigiqs",
+        "bigiq",
+        "contents deliverys",
+        "contents delivery",
+        "content deliverys",
+        "content delivery",
+        "contents deliverys nets works",
+        "contents deliverys nets work",
+        "contents deliverys net works",
+        "contents deliverys net work",
+        "contents delivery nets works",
+        "contents delivery nets work",
+        "contents delivery net works",
+        "contents delivery net work",
+        "content deliverys nets works",
+        "content deliverys nets work",
+        "content deliverys net works",
+        "content deliverys net work",
+        "content delivery nets works",
+        "content delivery nets work",
+        "content delivery net works",
+        "content delivery net work",
+        "contents deliverys networks",
+        "contents deliverys network",
+        "contents delivery networks",
+        "contents delivery network",
+        "content deliverys networks",
+        "content deliverys network",
+        "content delivery networks",
+        "deliverys nets works",
+        "deliverys nets work",
+        "deliverys net works",
+        "deliverys net work",
+        "delivery nets works",
+        "delivery nets work",
+        "delivery net works",
+        "delivery net work",
+        "f5 big ltm",
+        "f5bigltm",
+        "f5 networks",
+        "f5 network",
+        "loads balanceres",
+        "loads balancers",
+        "load balanceres",
+        "load balancers",
+        "loads balances",
+        "loads balance",
+        "load balances",
+        "load balance",
+        "wafs",
+        "webs applications farewalls",
+        "webs applications farewall",
+        "webs application farewalls",
+        "webs application farewall",
+        "web applications farewalls",
+        "web applications farewall",
+        "web application farewalls",
+        "web application farewall"
+      ]
+    },
+    {
+      "solucao": "Backup / Recuperacao / DR",
+      "fabricantePadrao": "Veritas/Cohesity",
+      "palavrasChave": [
+        "backup",
+        "backups",
+        "copia de seguranca",
+        "copias de seguranca",
+        "becape",
+        "replicacao de dados",
+        "recuperacao de desastres",
+        "disaster recovery",
+        "plano de continuidade",
+        "continuidade de negocio",
+        "deduplicacao",
+        "solucao de protecao de dados",
+        "protecao de dados",
+        "imutavel",
+        "imutabilidade",
+        " worm ",
+        "fita magnetica",
+        "biblioteca de fitas",
+        "restore",
+        "restauracao de dados",
+        "retencao de dados",
+        "guardas de dados",
+        "guardas de dado",
+        "guarda de dados",
+        "guarda de dado",
+        "veritas",
+        "verita"
+      ]
+    },
+    {
+      "solucao": "Storage",
+      "fabricantePadrao": "PureStorage",
+      "palavrasChave": [
+        "storage",
+        "storages",
+        "armazenamento de dados",
+        "unidade de armazenamento",
+        "solucao de armazenamento",
+        "subsistema de armazenamento",
+        "san corporativa",
+        "rede san",
+        "all flash",
+        "all-flash",
+        "disco de estado solido",
+        "expansao de armazenamento",
+        "capacidade de armazenamento",
+        "arranjo de discos",
+        "network attached storage",
+        "storage nas"
+      ]
+    },
+    {
+      "solucao": "DLP / Governanca de Dados",
+      "fabricantePadrao": "Varonis",
+      "palavrasChave": [
+        "prevencao de vazamento",
+        "vazamento de dados",
+        "perda de dados",
+        " dlp ",
+        "data loss prevention",
+        "classificacao de dados",
+        "governanca de dados",
+        "protecao de dados sensiveis",
+        "dados sensiveis",
+        "descoberta de dados",
+        "catalogo de dados",
+        "auditoria de acesso a dados",
+        "monitoramento de arquivos",
+        "permissoes de acesso a arquivos",
+        "dados nao estruturados",
+        "seguranca de dados",
+        "leis geral de protecao de dados",
+        "leis geral de protecao de dado",
+        "leis geral de protecoes de dados",
+        "leis geral de protecoes de dado",
+        "leis gerais de protecao de dados",
+        "leis gerais de protecao de dado",
+        "leis gerais de protecoes de dados",
+        "leis gerais de protecoes de dado",
+        "lei geral de protecao de dados",
+        "lei geral de protecao de dado",
+        "lei geral de protecoes de dados",
+        "lei geral de protecoes de dado",
+        "lei gerais de protecao de dados",
+        "lei gerais de protecao de dado",
+        "lei gerais de protecoes de dados",
+        "lei gerais de protecoes de dado",
+        "lgpds",
+        "lgpd",
+        "protecao de dados",
+        "protecao de dado",
+        "protecoes de dados",
+        "protecoes de dado",
+        "varonis",
+        "varoni"
+      ]
+    },
+    {
+      "solucao": "SIEM / SOC / SOAR",
+      "fabricantePadrao": "IBM",
+      "palavrasChave": [
+        " siem ",
+        "correlacao de eventos",
+        "gestao de logs",
+        "gerenciamento de logs",
+        "monitoramento de seguranca",
+        "security operations",
+        "centro de operacoes de seguranca",
+        " soar ",
+        "orquestracao de seguranca",
+        "analise de logs",
+        "retencao de logs",
+        "observabilidade",
+        "monitoramento continuo",
+        "gestao de eventos de seguranca",
+        "threat intelligence",
+        "inteligencia de ameacas",
+        "caca a ameacas",
+        "threat hunting",
+        "blues teams",
+        "blues team",
+        "blue teams",
+        "blue team",
+        "blueteams",
+        "blueteam",
+        "centros de operacao",
+        "centros de operacoes",
+        "centro de operacao",
+        "centro de operacoes",
+        "csocs",
+        "csoc",
+        "deteccao",
+        "deteccoes",
+        "nocs",
+        "noc",
+        "operacao de segurancas",
+        "operacao de seguranca",
+        "operacoes de segurancas",
+        "operacoes de seguranca",
+        "purples teams",
+        "purples team",
+        "purple teams",
+        "purple team",
+        "purpleteams",
+        "purpleteam",
+        "reds teams",
+        "reds team",
+        "red teams",
+        "red team",
+        "redteams",
+        "redteam",
+        "respostas",
+        "resposta",
+        "securitys operations centeres",
+        "securitys operations centers",
+        "securitys operation centeres",
+        "securitys operation centers",
+        "security operations centeres",
+        "security operations centers",
+        "security operation centeres",
+        "security operation centers",
+        "socs",
+        "soc"
+      ]
+    },
+    {
+      "solucao": "PAM / IAM / MFA",
+      "fabricantePadrao": "CyberArk",
+      "palavrasChave": [
+        "acesso privilegiado",
+        "contas privilegiadas",
+        "cofre de senhas",
+        "cofre de credenciais",
+        "gestao de senhas",
+        "gestao de credenciais",
+        " iam ",
+        "gestao de identidade",
+        "gestao de identidades",
+        "identidade e acesso",
+        "privileged access",
+        "gestao de acesso privilegiado",
+        "autenticacao multifator",
+        "multifator",
+        " mfa ",
+        "duplo fator",
+        "segundo fator",
+        "single sign-on",
+        "sso corporativo",
+        "federacao de identidade",
+        "gestao de acessos",
+        "privileged access management",
+        "gerenciamento de acesso privilegiado",
+        "acessos privilegiados",
+        "acessos privilegiado",
+        "acesso privilegiados",
+        "controles acessos",
+        "controles acesso",
+        "controle acessos",
+        "controle acesso",
+        "controles acessos privilegiados",
+        "controles acessos privilegiado",
+        "controles acesso privilegiados",
+        "controles acesso privilegiado",
+        "controle acessos privilegiados",
+        "controle acessos privilegiado",
+        "controle acesso privilegiados",
+        "controle acesso privilegiado",
+        "controles de acessos privilegiados",
+        "controles de acessos privilegiado",
+        "controles de acesso privilegiados",
+        "controles de acesso privilegiado",
+        "controle de acessos privilegiados",
+        "controle de acessos privilegiado",
+        "controle de acesso privilegiados",
+        "controle de acesso privilegiado",
+        "credencial privilegiadas",
+        "credencial privilegiada",
+        "credenciais privilegiadas",
+        "credenciais privilegiada",
+        "active directory",
+        "microsoft active directory",
+        "ad ds",
+        "entra id",
+        "microsoft entra",
+        "azure ad",
+        "single sign on",
+        "sso",
+        "provisionamento de identidades",
+        "diretorio corporativo",
+        "ldap",
+        "identity and access management"
+      ]
+    },
+    {
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "fabricantePadrao": "Tenable",
+      "palavrasChave": [
+        "gestao de vulnerabilidades",
+        "gerenciamento de vulnerabilidades",
+        "scanner de vulnerabilidade",
+        "scanner de vulnerabilidades",
+        "varredura de vulnerabilidade",
+        "varredura de vulnerabilidades",
+        "analise de vulnerabilidade",
+        "analise de vulnerabilidades",
+        "pentest",
+        "teste de invasao",
+        "teste de intrusao",
+        "teste de penetracao",
+        "superficie de ataque",
+        "gestao de exposicao",
+        "correcao de vulnerabilidades",
+        "analises de gaps",
+        "analises de gap",
+        "analise de gaps",
+        "analise de gap",
+        "gaps analysis",
+        "gaps analysi",
+        "gap analysis",
+        "gap analysi",
+        "gestao de vulnerabilidade",
+        "gestoes de vulnerabilidades",
+        "gestoes de vulnerabilidade",
+        "pens testers",
+        "pens tester",
+        "pen testers",
+        "pen tester",
+        "pens tests",
+        "pens test",
+        "pen tests",
+        "pen test",
+        "pens testes",
+        "pen testes",
+        "pentesters",
+        "pentester",
+        "pentests",
+        "pentestes"
+      ]
+    },
+    {
+      "solucao": "BAS / Simulacao de Ataque",
+      "fabricantePadrao": "Picus",
+      "palavrasChave": [
+        "breach and attack",
+        "simulacao de ataque",
+        "simulacao de ataques",
+        "validacao de seguranca",
+        "validacao de controles",
+        "red team",
+        "purple team",
+        "adversary emulation"
+      ]
+    },
+    {
+      "solucao": "AppSec / DAST / SAST",
+      "fabricantePadrao": "Acunetix",
+      "palavrasChave": [
+        "seguranca de aplicacoes",
+        "seguranca de aplicacao",
+        "analise estatica de codigo",
+        "analise dinamica",
+        "analise de codigo fonte",
+        " sast ",
+        " dast ",
+        " iast ",
+        "teste de seguranca de aplicacao",
+        "esteira devsecops",
+        "devsecops",
+        "seguranca no ciclo de desenvolvimento",
+        "varredura de codigo",
+        "composicao de software"
+      ]
+    },
+    {
+      "solucao": "Microssegmentacao / Zero Trust de Rede",
+      "fabricantePadrao": "Illumio",
+      "palavrasChave": [
+        "microssegmentacao",
+        "micro-segmentacao",
+        "microsegmentacao",
+        "segmentacao de rede",
+        "segmentacao logica",
+        "visibilidade de fluxos",
+        "mapeamento de dependencias",
+        "politicas de segmentacao",
+        "isolamento de cargas de trabalho",
+        "micro segmentacoes",
+        "microsegmentacoes",
+        "microssegmentacoes"
+      ]
+    },
+    {
+      "solucao": "Protecao de Marca / Digital Risk",
+      "fabricantePadrao": "AXUR",
+      "palavrasChave": [
+        "protecao de marca",
+        "risco digital",
+        "monitoramento de marca",
+        "dominios falsos",
+        "perfis falsos",
+        "takedown",
+        "remocao de conteudo",
+        "vazamento de credenciais",
+        "deep web",
+        "dark web",
+        "monitoramento de exposicao"
+      ]
+    },
+    {
+      "solucao": "Privacidade / LGPD / GRC",
+      "fabricantePadrao": "OneTrust",
+      "palavrasChave": [
+        " lgpd ",
+        "lei geral de protecao de dados",
+        "privacidade de dados",
+        "adequacao a lgpd",
+        "mapeamento de dados pessoais",
+        "dados pessoais",
+        "governanca risco e conformidade",
+        " grc ",
+        "gestao de riscos",
+        "gestao de conformidade",
+        "politica de privacidade",
+        "encarregado de dados",
+        "relatorio de impacto",
+        "ambientes microsofts",
+        "ambientes microsoft",
+        "ambiente microsofts",
+        "ambiente microsoft",
+        "auditorias",
+        "auditoria",
+        "auditorias em ambientes microsofts",
+        "auditorias em ambientes microsoft",
+        "auditorias em ambiente microsofts",
+        "auditorias em ambiente microsoft",
+        "auditoria em ambientes microsofts",
+        "auditoria em ambientes microsoft",
+        "auditoria em ambiente microsofts",
+        "auditoria em ambiente microsoft"
+      ]
+    },
+    {
+      "solucao": "Security Awareness / Treinamento",
+      "fabricantePadrao": "InfosecIQ",
+      "palavrasChave": [
+        "security awareness",
+        "conscientizacao em seguranca",
+        "conscientizacao de usuarios",
+        "treinamento em seguranca da informacao",
+        "campanha de phishing",
+        "simulacao de phishing",
+        "capacitacao em ciberseguranca",
+        "cultura de seguranca"
+      ]
+    },
+    {
+      "solucao": "Rede / Wireless / Infra (ZivaSec)",
+      "fabricantePadrao": "Aruba",
+      "palavrasChave": [
+        "switch",
+        "switches",
+        "comutador",
+        "comutadores",
+        "roteador",
+        "roteadores",
+        "access point",
+        "access points",
+        "ponto de acesso",
+        "pontos de acesso",
+        "controladora wireless",
+        "rede wireless",
+        "rede sem fio",
+        "rede sem fio corporativa",
+        "rede corporativa",
+        "infraestrutura de rede",
+        "cabeamento estruturado",
+        "ativos de rede",
+        "equipamentos de rede",
+        "rede local",
+        " lan ",
+        " wlan ",
+        "transceiver",
+        "transceivers",
+        "modulo optico",
+        "fibra optica",
+        "conectividade",
+        "comunicacao de dados",
+        "rede mpls",
+        " poe ",
+        "stacking",
+        "transceptor",
+        "conversor de midia",
+        "ponto de acesso wi fi",
+        "switch gerenciavel",
+        "switch poe",
+        "porta sfp",
+        "gigabit ethernet",
+        "cabo de empilhamento",
+        "empilhamento de switches",
+        "porta de empilhamento",
+        "vpns",
+        "vpn",
+        "wlans",
+        "dwdm",
+        "cwdm",
+        "multiplexacao optica",
+        "transporte optico",
+        "rede optica",
+        "comutacao optica"
+      ]
+    },
+    {
+      "solucao": "Infra / HCI / Servidores",
+      "fabricantePadrao": "Nutanix",
+      "palavrasChave": [
+        " hci ",
+        "hiperconvergencia",
+        "hiperconvergente",
+        "hiperconverg",
+        "infraestrutura hiperconvergente",
+        "servidor de rede",
+        "servidores de rede",
+        "servidor de aplicacao",
+        "data center",
+        "datacenter",
+        "centro de dados",
+        "virtualizacao",
+        "virtualizacao de servidores",
+        "hipervisor",
+        "maquinas virtuais",
+        "cluster",
+        "alta disponibilidade",
+        "nuvem privada",
+        "blade",
+        "servidor rack",
+        "servidor blade",
+        "servidor corporativo",
+        "servidores fisicos",
+        "servidor de virtualizacao",
+        "hcis",
+        "vmwares",
+        "vmware",
+        "hadoop",
+        "apache hadoop",
+        "processamento distribuido",
+        "big data",
+        "data lake",
+        "grande volume de dados"
+      ]
+    },
+    {
+      "solucao": "Cloud Security",
+      "fabricantePadrao": "Check Point",
+      "palavrasChave": [
+        "seguranca em nuvem",
+        "seguranca na nuvem",
+        "seguranca de nuvem",
+        " cspm ",
+        " cnapp ",
+        " cwpp ",
+        "protecao em nuvem",
+        "workload em nuvem",
+        "cargas de trabalho em nuvem",
+        "postura de seguranca em nuvem",
+        "nuvem publica",
+        "multinuvem",
+        "multicloud",
+        "kubernetes",
+        "containers docker",
+        "orquestracao de containers",
+        "conteinerizacao"
+      ]
+    },
+    {
+      "solucao": "NAC / Controle de Acesso a Rede",
+      "fabricantePadrao": "ForeScout",
+      "palavrasChave": [
+        "controle de acesso a rede",
+        "network access control",
+        " nac ",
+        "autenticacao de rede",
+        "802.1x",
+        "postura de dispositivos",
+        "inventario de dispositivos de rede"
+      ]
+    },
+    {
+      "solucao": "Criptografia / PKI / HSM",
+      "fabricantePadrao": "Thales",
+      "palavrasChave": [
+        "criptografia",
+        "criptografia de dados",
+        " hsm ",
+        "modulo de seguranca em hardware",
+        "icp-brasil",
+        "certificado digital",
+        "certificados digitais",
+        "gerenciamento de chaves",
+        "gestao de chaves",
+        "assinatura digital",
+        "tokenizacao",
+        "cifragem"
+      ]
+    },
+    {
+      "solucao": "NDR / Visibilidade de Rede",
+      "fabricantePadrao": "Gigamon",
+      "palavrasChave": [
+        " ndr ",
+        "network detection",
+        "tap de rede",
+        "visibilidade de rede",
+        "visibilidade de trafego",
+        "packet broker",
+        "espelhamento de trafego",
+        "analise de trafego",
+        "monitoramento de rede",
+        "captura de pacotes",
+        "netflow"
+      ]
+    },
+    {
+      "_nota": "Vocabulario ampliado em 14/08/2026: um edital de 'camera IP speed dome PTZ' do DEMAE-POA zerou porque so tinhamos 'camera de seguranca'. E 'seguranca eletronica' e como o Judiciario chama manutencao de CFTV/alarme/acesso.",
+      "solucao": "CFTV / Videomonitoramento / Controle de Acesso",
+      "fabricantePadrao": "Dahua",
+      "palavrasChave": [
+        "cftv",
+        "videomonitoramento",
+        "video monitoramento",
+        "camera de seguranca",
+        "cameras de seguranca",
+        "camera ip",
+        "cameras ip",
+        "speed dome",
+        "mini dome",
+        "camera dome",
+        "controle de acesso fisico",
+        "catraca",
+        "videoporteiro",
+        " dvr ",
+        " nvr ",
+        "circuito fechado de tv",
+        "reconhecimento facial",
+        "leitor biometrico",
+        "seguranca eletronica",
+        "sistema de alarme",
+        "alarme monitorado",
+        "monitoramento eletronico",
+        "cerca eletrica",
+        "camera ptz",
+        "tipo ptz",
+        "speed dome ptz",
+        "reconhec facial",
+        "leitor facial",
+        "identificador biometrico",
+        "biometria facial",
+        "cancela automatica",
+        "catraca eletronica",
+        "roleta borboleta",
+        "fechadura eletrica",
+        "controle do acesso de pessoas",
+        "vigilancia eletronica",
+        "camera video",
+        "gravador de video",
+        "gravador digital",
+        "ip bullet"
+      ]
+    },
+    {
+      "solucao": "Servicos Gerenciados / Consultoria",
+      "fabricantePadrao": "EnterpriseCore",
+      "palavrasChave": [
+        "soc 24",
+        "soc 24x7",
+        "servico gerenciado",
+        "servicos gerenciados",
+        "suporte tecnico especializado",
+        "consultoria em seguranca",
+        "consultoria em ti",
+        "resposta a incidentes",
+        "tratamento de incidentes",
+        "iso 27001",
+        "gestao de seguranca da informacao",
+        "politica de seguranca da informacao",
+        "analise de riscos",
+        "auditoria de seguranca",
+        "sustentacao de ambiente",
+        "operacao assistida",
+        "alocacao de mao de obra especializada",
+        "fabrica de servicos",
+        "service desk",
+        "nivel de servico",
+        " sla ",
+        "garantia de equipamentos",
+        "servicos de garantia",
+        "extensao de garantia",
+        "renovacao de garantia",
+        "suporte e garantia",
+        "garantia e suporte tecnico",
+        "central de servicos",
+        "gerenciamento de redes",
+        "gerenciamento de infraestrutura",
+        "servicos de gerenciamento de infraestrutura",
+        "sustentacao de infraestrutura",
+        "servicos auxiliares de tecnologia",
+        "servico continuado de ti",
+        "instalacao e configuracao",
+        "parametrizacao",
+        "integracao de sistemas",
+        "manutencao evolutiva",
+        "suporte tecnico especializado em ti",
+        "advanceds threats preventions",
+        "advanceds threats prevention",
+        "advanceds threat preventions",
+        "advanceds threat prevention",
+        "advanced threats preventions",
+        "advanced threats prevention",
+        "advanced threat preventions",
+        "advanced threat prevention",
+        "antispam",
+        "antispans",
+        "antis spam",
+        "antis spans",
+        "anti spam",
+        "anti spans",
+        "ataques ciberneticos",
+        "ataques cibernetico",
+        "ataques ciberneticas",
+        "ataques cibernetica",
+        "ataque ciberneticos",
+        "ataque cibernetico",
+        "ataque ciberneticas",
+        "ataque cibernetica",
+        "hiper convergencias",
+        "hiper convergencia",
+        "hiper convergentes",
+        "hiper convergente",
+        "hiperconvergencias",
+        "hiperconvergencia",
+        "hiperconvergentes",
+        "hiperconvergente",
+        "palos altos",
+        "palos alto",
+        "palo altos",
+        "palo alto"
+      ]
+    }
+  ],
+  "_instrucaoFabricantes": "REGRA DE OURO DOS ALIASES: nada com 3 letras ou menos solto. Sigla curta casa dentro de especificacao de hardware e vira falso positivo (foi o que aconteceu com 'ibm' em 'monitor padrao ibm'). Se a marca tem nome curto, use o nome do produto (qradar, guardium, big-ip) ou ponha espaco nas pontas (' a10 ') para forcar palavra isolada. Para auditar depois de mexer: rode o processamento e confira em quais textos cada marca casou. MARCA DE CATALOGO LARGO (\"sinalFraco\": true). Medido em 100.165 editais reais: a marca Positivo aparece 12 vezes e ZERO delas em contexto de TI - ela faz desktop de escritorio. Lenovo acerta 33%, Cisco 36%, Dell 52%; ja a Fortinet, que so fabrica seguranca, 64%. Marca que fabrica de impressora a servidor nao estabelece escopo sozinha: o \"dell\" de \"Memoria Ram aplicacao: dell optiplex 3060\" e especificacao de desktop. Com sinalFraco, os pontos de parceiro so entram se o edital JA tiver categoria do portfolio detectada.",
+  "fabricantes": [
+    {
+      "nome": "Check Point",
+      "solucao": "Ciberseguranca / NGFW",
+      "aliases": [
+        "check point",
+        "checkpoint",
+        "harmony",
+        "cloudguard",
+        "quantum"
+      ]
+    },
+    {
+      "nome": "FORTINET",
+      "solucao": "NGFW / Firewall",
+      "aliases": [
+        "fortinet",
+        "fortigate",
+        "forti "
+      ]
+    },
+    {
+      "nome": "Cisco",
+      "solucao": "Rede / Seguranca",
+      "aliases": [
+        "cisco",
+        "meraki",
+        "umbrella"
+      ],
+      "sinalFraco": true
+    },
+    {
+      "nome": "Aruba",
+      "solucao": "Rede / Wireless",
+      "aliases": [
+        "aruba",
+        "clearpass"
+      ]
+    },
+    {
+      "nome": "Ruckus",
+      "solucao": "Rede / Wireless",
+      "aliases": [
+        "ruckus",
+        "commscope"
+      ]
+    },
+    {
+      "nome": "HPE",
+      "solucao": "Infraestrutura / Servidores",
+      "aliases": [
+        "hpe",
+        "hewlett packard",
+        "proliant",
+        "synergy"
+      ],
+      "sinalFraco": true
+    },
+    {
+      "nome": "Lenovo",
+      "solucao": "Infraestrutura / Servidores",
+      "aliases": [
+        "lenovo",
+        "thinksystem",
+        "thinkagile"
+      ],
+      "sinalFraco": true
+    },
+    {
+      "nome": "Dell",
+      "solucao": "Infraestrutura / Servidores",
+      "aliases": [
+        "dell",
+        "poweredge"
+      ],
+      "sinalFraco": true
+    },
+    {
+      "nome": "Positivo",
+      "solucao": "Hardware",
+      "aliases": [
+        "positivo tecnologia"
+      ],
+      "sinalFraco": true
+    },
+    {
+      "nome": "Nutanix",
+      "solucao": "Infraestrutura / HCI",
+      "aliases": [
+        "nutanix"
+      ]
+    },
+    {
+      "nome": "VMWare",
+      "solucao": "Virtualizacao",
+      "aliases": [
+        "vmware",
+        "vsphere",
+        "vcenter",
+        "vsan"
+      ]
+    },
+    {
+      "nome": "Suse",
+      "solucao": "Sistema Operacional",
+      "aliases": [
+        "suse"
+      ]
+    },
+    {
+      "nome": "PureStorage",
+      "solucao": "Storage",
+      "aliases": [
+        "pure storage",
+        "purestorage"
+      ]
+    },
+    {
+      "nome": "Veritas/Cohesity",
+      "solucao": "Backup / Protecao de Dados",
+      "aliases": [
+        "veritas",
+        "cohesity",
+        "netbackup"
+      ]
+    },
+    {
+      "nome": "Commvault",
+      "solucao": "Backup",
+      "aliases": [
+        "commvault"
+      ]
+    },
+    {
+      "nome": "Veeam Software",
+      "solucao": "Backup",
+      "aliases": [
+        "veeam"
+      ]
+    },
+    {
+      "nome": "F5 Networks",
+      "solucao": "ADC / WAF",
+      "aliases": [
+        "f5 networks",
+        "big-ip",
+        "bigip",
+        "f5 "
+      ]
+    },
+    {
+      "buscarPeloNome": false,
+      "nome": "A10",
+      "solucao": "ADC / Balanceamento",
+      "aliases": [
+        "a10 networks",
+        "a10 "
+      ]
+    },
+    {
+      "nome": "CloudFlare",
+      "solucao": "WAF / CDN / Zero Trust",
+      "aliases": [
+        "cloudflare"
+      ]
+    },
+    {
+      "nome": "Zscaler",
+      "solucao": "SSE / Proxy / ZTNA",
+      "aliases": [
+        "zscaler"
+      ]
+    },
+    {
+      "nome": "Netskope",
+      "solucao": "SSE / CASB",
+      "aliases": [
+        "netskope"
+      ]
+    },
+    {
+      "nome": "Varonis",
+      "solucao": "DLP / Governanca de Dados",
+      "aliases": [
+        "varonis"
+      ]
+    },
+    {
+      "nome": "CyberArk",
+      "solucao": "PAM",
+      "aliases": [
+        "cyberark"
+      ]
+    },
+    {
+      "_nota": "NAO usar 'ibm' sozinho: em edital aparece como especificacao de compatibilidade de hardware ('monitor padrao ibm', 'teclado padrao ibm') e gera falso positivo. Os produtos de seguranca da IBM sempre vem nomeados.",
+      "buscarPeloNome": false,
+      "nome": "IBM",
+      "solucao": "SIEM / Seguranca",
+      "aliases": [
+        "qradar",
+        "guardium",
+        "ibm security",
+        "ibm qradar",
+        "ibm storage",
+        "ibm spectrum",
+        "ibm flashsystem"
+      ],
+      "sinalFraco": true
+    },
+    {
+      "nome": "Elastic",
+      "solucao": "SIEM / Observabilidade",
+      "aliases": [
+        "elastic",
+        "elasticsearch",
+        " elk "
+      ]
+    },
+    {
+      "nome": "Qualys",
+      "solucao": "Gestao de Vulnerabilidades",
+      "aliases": [
+        "qualys"
+      ]
+    },
+    {
+      "nome": "Tenable",
+      "solucao": "Gestao de Vulnerabilidades",
+      "aliases": [
+        "tenable",
+        "nessus"
+      ]
+    },
+    {
+      "nome": "Picus",
+      "solucao": "BAS / Simulacao de Ataque",
+      "aliases": [
+        "picus"
+      ]
+    },
+    {
+      "nome": "TrendMicro",
+      "solucao": "Endpoint / XDR",
+      "aliases": [
+        "trend micro",
+        "trendmicro",
+        "deep security"
+      ]
+    },
+    {
+      "nome": "Sophos",
+      "solucao": "Endpoint / Firewall",
+      "aliases": [
+        "sophos"
+      ]
+    },
+    {
+      "nome": "Symantec",
+      "solucao": "Endpoint / DLP",
+      "aliases": [
+        "symantec"
+      ]
+    },
+    {
+      "nome": "Gigamon",
+      "solucao": "Visibilidade de Rede",
+      "aliases": [
+        "gigamon"
+      ]
+    },
+    {
+      "nome": "ForeScout",
+      "solucao": "NAC",
+      "aliases": [
+        "forescout"
+      ]
+    },
+    {
+      "nome": "Illumio",
+      "solucao": "Microssegmentacao",
+      "aliases": [
+        "illumio"
+      ]
+    },
+    {
+      "nome": "Vectra",
+      "solucao": "NDR",
+      "aliases": [
+        "vectra"
+      ]
+    },
+    {
+      "nome": "Thales",
+      "solucao": "Criptografia / HSM / PKI",
+      "aliases": [
+        "thales",
+        "gemalto",
+        "luna hsm"
+      ]
+    },
+    {
+      "nome": "Dahua",
+      "solucao": "CFTV",
+      "aliases": [
+        "dahua"
+      ]
+    },
+    {
+      "nome": "Acunetix",
+      "solucao": "AppSec / DAST",
+      "aliases": [
+        "acunetix"
+      ]
+    },
+    {
+      "nome": "Veracode",
+      "solucao": "AppSec / SAST",
+      "aliases": [
+        "veracode"
+      ]
+    },
+    {
+      "nome": "Juniper",
+      "solucao": "Rede / Switches",
+      "aliases": [
+        "juniper"
+      ]
+    },
+    {
+      "nome": "AXUR",
+      "solucao": "Digital Risk / Protecao de Marca",
+      "aliases": [
+        "axur"
+      ]
+    },
+    {
+      "nome": "OneTrust",
+      "solucao": "Privacidade / GRC",
+      "aliases": [
+        "onetrust"
+      ]
+    },
+    {
+      "nome": "Tuvis",
+      "solucao": "Seguranca de Mensageria",
+      "aliases": [
+        "tuvis"
+      ]
+    },
+    {
+      "nome": "Backbox",
+      "solucao": "Automacao/Backup de Rede",
+      "aliases": [
+        "backbox"
+      ]
+    },
+    {
+      "nome": "Illumio",
+      "solucao": "Microssegmentacao",
+      "aliases": [
+        "illumio"
+      ]
+    },
+    {
+      "buscarPeloNome": false,
+      "nome": "HSC",
+      "solucao": "Servicos / Software",
+      "aliases": [
+        " hsc "
+      ]
+    },
+    {
+      "nome": "NGSX",
+      "solucao": "Servicos ENTERPRISECORE",
+      "aliases": [
+        "ngsx"
+      ]
+    },
+    {
+      "nome": "DNASec",
+      "solucao": "Servicos ENTERPRISECORE",
+      "aliases": [
+        "dnasec",
+        "dna sec"
+      ]
+    },
+    {
+      "nome": "AcessOne",
+      "solucao": "Servicos / Acesso",
+      "aliases": [
+        "acessone",
+        "acess one",
+        "access one"
+      ]
+    },
+    {
+      "nome": "InfosecIQ",
+      "solucao": "Security Awareness",
+      "aliases": [
+        "infosec iq",
+        "infoseciq"
+      ]
+    },
+    {
+      "nome": "Thales",
+      "solucao": "Criptografia / HSM / PKI",
+      "aliases": [
+        "safenet"
+      ]
+    },
+    {
+      "nome": "EnterpriseCore",
+      "solucao": "Servicos ENTERPRISECORE",
+      "aliases": [
+        " enterprisecore ",
+        "nt sec"
+      ]
+    },
+    {
+      "nome": "ZIVA",
+      "solucao": "Conectividade (ZivaSec)",
+      "aliases": [
+        "zivasec",
+        " ziva "
+      ]
+    }
+  ],
+  "concorrentes": [
+    {
+      "nome": "Huawei",
+      "aliases": [
+        "huawei",
+        "oceanstor"
+      ]
+    },
+    {
+      "nome": "NetApp",
+      "aliases": [
+        "netapp"
+      ]
+    },
+    {
+      "nome": "Hitachi",
+      "aliases": [
+        "hitachi"
+      ]
+    },
+    {
+      "nome": "Palo Alto",
+      "aliases": [
+        "palo alto",
+        "pan-os"
+      ]
+    },
+    {
+      "nome": "SonicWall",
+      "aliases": [
+        "sonicwall"
+      ]
+    },
+    {
+      "nome": "WatchGuard",
+      "aliases": [
+        "watchguard"
+      ]
+    },
+    {
+      "nome": "Kaspersky",
+      "aliases": [
+        "kaspersky"
+      ]
+    },
+    {
+      "nome": "McAfee",
+      "aliases": [
+        "mcafee"
+      ]
+    },
+    {
+      "nome": "ESET",
+      "aliases": [
+        " eset "
+      ]
+    },
+    {
+      "nome": "Bitdefender",
+      "aliases": [
+        "bitdefender"
+      ]
+    },
+    {
+      "nome": "CrowdStrike",
+      "aliases": [
+        "crowdstrike"
+      ]
+    },
+    {
+      "nome": "SailPoint",
+      "aliases": [
+        "sailpoint",
+        "identityiq"
+      ]
+    },
+    {
+      "nome": "Intelbras",
+      "aliases": [
+        "intelbras"
+      ]
+    },
+    {
+      "nome": "SentinelOne",
+      "aliases": [
+        "sentinelone"
+      ]
+    },
+    {
+      "nome": "Extreme Networks",
+      "aliases": [
+        "extreme networks"
+      ]
+    },
+    {
+      "nome": "Ubiquiti/UniFi",
+      "aliases": [
+        "ubiquit",
+        "unifi"
+      ]
+    },
+    {
+      "nome": "Mikrotik",
+      "aliases": [
+        "mikrotik"
+      ]
+    },
+    {
+      "nome": "TP-Link",
+      "aliases": [
+        "tp-link",
+        "tp link"
+      ]
+    },
+    {
+      "nome": "Datacom",
+      "aliases": [
+        "datacom"
+      ]
+    }
+  ],
+  "_notaFracas": "'estacao de trabalho' entra aqui (e nao em Endpoint) porque em edital brasileiro significa desktop: e negocio de hardware, vale pontos de termo generico, nao de solucao de seguranca.",
+  "palavrasFracas": [
+    "estacao de trabalho",
+    "estacoes de trabalho",
+    "microcomputador",
+    "desktop corporativo",
+    "seguranca da informacao",
+    "seguranca cibernetica",
+    "ciberseguranca",
+    "tecnologia da informacao",
+    "solucao de ti",
+    "solucoes de ti",
+    "infraestrutura de ti",
+    "equipamentos de rede",
+    "licenciamento de software",
+    "software de seguranca",
+    "solucao de seguranca",
+    "ferramenta de seguranca",
+    "modernizacao tecnologica",
+    "solucao de nuvem"
+  ],
+  "termosExcluidos": [
+    "seguro de vida",
+    "seguradora",
+    "apolice de seguro",
+    "seguranca do trabalho",
+    " epi ",
+    "vigilancia armada",
+    "vigilancia desarmada",
+    "seguranca patrimonial",
+    "vigilante",
+    "brigada de incendio",
+    "extintor",
+    "vale transporte",
+    "seguranca alimentar",
+    "material de limpeza",
+    "genero alimenticio"
+  ],
+  "_instrucaoEspecificidade": "NIVEL DE ESPECIFICIDADE DA PALAVRA-CHAVE. Sem isto todas as 400+ palavras valem o mesmo, e 'conectividade' (que aparece na ficha de um teclado sem fio) pontua igual a 'breach and attack' (que so aparece num edital que e exatamente o que a ENTERPRISECORE vende). NUCLEO = termo inequivoco: se apareceu, o edital e da nossa area. Ganha 'fatorNucleo'. AMBIGUAS = vocabulario legitimo das nossas categorias que tambem aparece em edital de outra coisa. Se a categoria disparou SO com palavra ambigua, os pontos caem para 'fatorSoAmbigua'. Uma palavra que nao esta em nenhuma das duas listas e tratada como normal (fator 1.0). 'valorExigeAderencia' impede que o porte do contrato infle edital que nao e nosso: o bonus de valor so entra se os pontos de categoria chegarem a esse minimo. NIVEL DE ITEM: dentro de um lote, um item conta como nosso se casar palavra especifica OU DUAS ambiguas. Uma ambigua sozinha e carona (o nobreak que entrou por 'servidores'); duas ou mais na mesma linha de especificacao curta e sinal de verdade ('switch' + 'poe' + 'empilhamento' e um switch de rack, nao carona). DUAS AMBIGUAS DA MESMA CATEGORIA valem como especifica (\"ambiguasQueViramEspecifica\"): uma sozinha e carona, duas na mesma categoria e locucao tecnica. Caso: \"subscricao de software para virtualizacao de infraestrutura de Data Center\" casava \"data center\" e \"virtualizacao\", as duas ambiguas de Infra/HCI, e ficava em 17 pontos.",
+  "especificidade": {
+    "fatorNucleo": 1.5,
+    "fatorSoAmbigua": 0.35,
+    "categoriaTeto": 64,
+    "valorExigeAderencia": 25,
+    "nucleo": [
+      "breach and attack",
+      "simulacao de ataque",
+      "edr",
+      "xdr",
+      "ndr",
+      "siem",
+      "soar",
+      "ngfw",
+      "next generation firewall",
+      "waf",
+      "firewall de aplicacao web",
+      "anti-ddos",
+      "antiddos",
+      "mitigacao de ddos",
+      "negacao de servico",
+      "dlp",
+      "data loss prevention",
+      "prevencao de vazamento",
+      "casb",
+      "sase",
+      "ztna",
+      "sse",
+      "zero trust",
+      "confianca zero",
+      "pam",
+      "gestao de acesso privilegiado",
+      "cofre de senhas",
+      "sast",
+      "dast",
+      "iast",
+      "cspm",
+      "cwpp",
+      "nac",
+      "hsm",
+      "pentest",
+      "teste de intrusao",
+      "teste de invasao",
+      "microssegmentacao",
+      "sandbox",
+      "threat intelligence",
+      "inteligencia de ameacas",
+      "security awareness",
+      "conscientizacao em seguranca",
+      "prevencao de intrusao",
+      "sistema de prevencao de intrusao",
+      "deteccao de intrusao",
+      "gateway de seguranca",
+      "protecao de perimetro",
+      "seguranca de perimetro",
+      "antimalware",
+      "anti-malware",
+      "gestao de vulnerabilidades",
+      "analise de vulnerabilidades",
+      "centro de operacoes de seguranca",
+      "hiperconvergencia",
+      "hiperconvergente"
+    ],
+    "ambiguas": [
+      "poe",
+      "sla",
+      "lgpd",
+      "grc",
+      "conectividade",
+      "datacenter",
+      "data center",
+      "switch",
+      "switches",
+      "unidade de armazenamento",
+      "capacidade de armazenamento",
+      "servidores",
+      "virtualizacao",
+      "lan",
+      "wlan",
+      "protecao de dados",
+      "fibra optica",
+      "fibra otica",
+      "cabo de fibra",
+      "monitoramento continuo",
+      "certificado digital",
+      "certificados digitais",
+      "suporte tecnico especializado",
+      "armazenamento de dados",
+      "mdr",
+      "auditorias",
+      "auditoria",
+      "balancears",
+      "balancear",
+      "balanceamentos",
+      "balanceamento",
+      "centros de operacoes",
+      "centro de operacoes",
+      "deteccao",
+      "deteccoes",
+      "ips",
+      "malwares",
+      "malware",
+      "nocs",
+      "noc",
+      "respostas",
+      "resposta",
+      "socs",
+      "soc",
+      "vmwares",
+      "vmware",
+      "parametrizacao",
+      "atualizacoes de seguranca",
+      "instalacao e configuracao",
+      "integracao de sistemas",
+      "manutencao evolutiva",
+      "operacao assistida",
+      "infraestrutura de rede",
+      "garantia de equipamentos",
+      "servicos de garantia",
+      "comunicacao de dados"
+    ],
+    "minAmbiguasPorItem": 2,
+    "ambiguasQueViramEspecifica": 2
+  },
+  "_instrucaoModalidade": "REGISTRO DE PRECOS (RP) x LOTE UNICO. A regra de centralidade no lote pergunta 'quantos itens do lote sao nossos?' e reduz a nota quando sao poucos. Isso esta CERTO para contratacao de solucao integrada, onde e preciso entregar o lote inteiro: se 3 de 20 itens sao nossos, o edital nao e nosso. Mas esta ERRADO para Registro de Precos com preco por item, onde o fornecedor escolhe em quais itens vai propor - a proporcao nao impede de participar, so define o tamanho da fatia. Caso real que expos isso: PE/46/2026 do Comando da Aeronautica (SISCEAB), RP com 78 itens - 16 sao CFTV, controle de acesso biometrico, switches PoE+ e access point (nosso), e o resto e cabo, abracadeira, broca e fita isolante. Levava reducao de 30% como se fosse preciso fornecer a caixa de parafuso junto. 'rpValorProporcional' resolve o outro lado: o valor estimado do RP e a cesta inteira, entao so a fatia proporcional ao nosso escopo conta como porte de contrato. CONTRAPESO: em RP a proporcao nao bloqueia a participacao, mas custo de montar proposta e fixo - fatia de 12% da cesta vale menos esforco que fatia de 50%. Por isso a proporcao sai da aderencia tecnica e entra como desconto GRADUADO na nota final: penalidade = rpPenalidadeFatiaMax * (1 - proporcao/rpFatiaPlena), zerada a partir de rpFatiaPlena. Graduado de proposito - degrau em 25% faria 24% e 26% terem destinos opostos.",
+  "modalidade": {
+    "marcadoresRegistroPrecos": [
+      "registro de precos",
+      "sistema de registro de precos",
+      "intencao de registro de precos",
+      "registro de preco",
+      " srp "
+    ],
+    "rpIgnoraProporcaoLote": true,
+    "rpValorProporcional": true,
+    "rpFatiaPlena": 0.5,
+    "rpPenalidadeFatiaMax": -18,
+    "marcadoresNaoCompetitivos": [
+      "chamamento publico",
+      "chamamento eletronico",
+      "manifestacao de interesse",
+      "procedimento de manifestacao de interesse",
+      "consulta publica",
+      "audiencia publica",
+      "credenciamento"
+    ],
+    "penalidadeNaoCompetitivo": -70
+  },
+  "_instrucaoExpressoes": "EXPRESSOES DE CONJUNCAO (operador \"&\" da fonte do usuario, 19/08/2026). A categoria dispara quando QUALQUER variante de \"a\" E QUALQUER variante de \"b\" aparecem no mesmo objeto. E o sinal mais preciso do dicionario: exigir duas palavras elimina quase toda carona. Medido em 93.253 editais: \"pontos & acesso\" dispara em 26, \"deteccao & resposta\" em 7. Compare com a palavra solta equivalente: \"deteccao\" sozinha dispara 168 vezes e 89% delas sao alarme de incendio. Conta como palavra ESPECIFICA (nunca ambigua), porque a conjuncao ja e a desambiguacao. PROXIMIDADE OBRIGATORIA: as duas pontas tem de estar a no maximo \"expressaoJanelaChars\" caracteres uma da outra. Sem isso o \"&\" vira ruido: eu implementei primeiro como \"as duas palavras em qualquer lugar do objeto\" e o resultado foi 5 falsos positivos em 6 mudancas - um edital de laboratorio de Fisioterapia casou \"deteccao & resposta\", um de obra civil casou \"gestao & riscos\" e um de site WordPress casou \"ativos & seguranca\". A intencao da fonte e a LOCUCAO (\"ponto de acesso\"), nao duas palavras soltas no mesmo texto. REMOVIDAS EM 28/08/2026: \"seguranca & informacao\" (todas variantes de singular/plural) e \"protecao & dados\"/\"protecao & dado\" - diferente de \"deteccao & resposta\", essas duas formam uma locucao tao comum no burocrates brasileiro (\"seguranca da informacao\", \"protecao de dados\") que aparece como boilerplate em documento de QUALQUER area de TI, nao so na nossa. Motivou a remocao: JFrog Artifactory (ferramenta de DevOps, nada de seguranca) marcando 51 pontos so por causa dessa expressao, e um chamamento publico de parceria estrategica de nuvem da Procempa inflado por ela. A medicao de 78/56 disparos no corpus de 93k mostrava frequencia, nao precisao - nao foi conferido a mao na epoca quantos desses disparos eram falso positivo.",
+  "expressoes": [
+    {
+      "origem": "ativo & segurança",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "ativo"
+      ],
+      "b": [
+        "seguranca"
+      ]
+    },
+    {
+      "origem": "ativo & seguranças",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "ativo"
+      ],
+      "b": [
+        "segurancas"
+      ]
+    },
+    {
+      "origem": "ativos & segurança",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "ativos"
+      ],
+      "b": [
+        "seguranca"
+      ]
+    },
+    {
+      "origem": "ativos & seguranças",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "ativos"
+      ],
+      "b": [
+        "segurancas"
+      ]
+    },
+    {
+      "origem": "balanceador & carga",
+      "solucao": "WAF / ADC / DDoS",
+      "a": [
+        "balanceador"
+      ],
+      "b": [
+        "carga"
+      ]
+    },
+    {
+      "origem": "balanceador & cargas",
+      "solucao": "WAF / ADC / DDoS",
+      "a": [
+        "balanceador"
+      ],
+      "b": [
+        "cargas"
+      ]
+    },
+    {
+      "origem": "balanceador & conexão",
+      "solucao": "WAF / ADC / DDoS",
+      "a": [
+        "balanceador"
+      ],
+      "b": [
+        "conexao"
+      ]
+    },
+    {
+      "origem": "balanceador & conexoes",
+      "solucao": "WAF / ADC / DDoS",
+      "a": [
+        "balanceador"
+      ],
+      "b": [
+        "conexoes"
+      ]
+    },
+    {
+      "origem": "balanceadores & carga",
+      "solucao": "WAF / ADC / DDoS",
+      "a": [
+        "balanceadores"
+      ],
+      "b": [
+        "carga"
+      ]
+    },
+    {
+      "origem": "balanceadores & cargas",
+      "solucao": "WAF / ADC / DDoS",
+      "a": [
+        "balanceadores"
+      ],
+      "b": [
+        "cargas"
+      ]
+    },
+    {
+      "origem": "balanceadores & conexão",
+      "solucao": "WAF / ADC / DDoS",
+      "a": [
+        "balanceadores"
+      ],
+      "b": [
+        "conexao"
+      ]
+    },
+    {
+      "origem": "balanceadores & conexoes",
+      "solucao": "WAF / ADC / DDoS",
+      "a": [
+        "balanceadores"
+      ],
+      "b": [
+        "conexoes"
+      ]
+    },
+    {
+      "origem": "cofre & senha",
+      "solucao": "PAM / IAM / MFA",
+      "a": [
+        "cofre"
+      ],
+      "b": [
+        "senha"
+      ]
+    },
+    {
+      "origem": "cofre & senhas",
+      "solucao": "PAM / IAM / MFA",
+      "a": [
+        "cofre"
+      ],
+      "b": [
+        "senhas"
+      ]
+    },
+    {
+      "origem": "cofres & senha",
+      "solucao": "PAM / IAM / MFA",
+      "a": [
+        "cofres"
+      ],
+      "b": [
+        "senha"
+      ]
+    },
+    {
+      "origem": "cofres & senhas",
+      "solucao": "PAM / IAM / MFA",
+      "a": [
+        "cofres"
+      ],
+      "b": [
+        "senhas"
+      ]
+    },
+    {
+      "origem": "controles & vulnerabilidade",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "controles"
+      ],
+      "b": [
+        "vulnerabilidade"
+      ]
+    },
+    {
+      "origem": "controles & vulnerabilidades",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "controles"
+      ],
+      "b": [
+        "vulnerabilidades"
+      ]
+    },
+    {
+      "origem": "controle & vulnerabilidade",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "controle"
+      ],
+      "b": [
+        "vulnerabilidade"
+      ]
+    },
+    {
+      "origem": "controle & vulnerabilidades",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "controle"
+      ],
+      "b": [
+        "vulnerabilidades"
+      ]
+    },
+    {
+      "origem": "detecção & resposta",
+      "solucao": "Endpoint / EDR / XDR",
+      "a": [
+        "deteccao"
+      ],
+      "b": [
+        "resposta"
+      ]
+    },
+    {
+      "origem": "detecção & respostas",
+      "solucao": "Endpoint / EDR / XDR",
+      "a": [
+        "deteccao"
+      ],
+      "b": [
+        "respostas"
+      ]
+    },
+    {
+      "origem": "detecções & resposta",
+      "solucao": "Endpoint / EDR / XDR",
+      "a": [
+        "deteccoes"
+      ],
+      "b": [
+        "resposta"
+      ]
+    },
+    {
+      "origem": "detecções & respostas",
+      "solucao": "Endpoint / EDR / XDR",
+      "a": [
+        "deteccoes"
+      ],
+      "b": [
+        "respostas"
+      ]
+    },
+    {
+      "origem": "gestão & incidente",
+      "solucao": "SIEM / SOC / SOAR",
+      "a": [
+        "gestao"
+      ],
+      "b": [
+        "incidente"
+      ]
+    },
+    {
+      "origem": "gestão & incidentes",
+      "solucao": "SIEM / SOC / SOAR",
+      "a": [
+        "gestao"
+      ],
+      "b": [
+        "incidentes"
+      ]
+    },
+    {
+      "origem": "gestão & risco",
+      "solucao": "Privacidade / LGPD / GRC",
+      "a": [
+        "gestao"
+      ],
+      "b": [
+        "risco"
+      ]
+    },
+    {
+      "origem": "gestão & riscos",
+      "solucao": "Privacidade / LGPD / GRC",
+      "a": [
+        "gestao"
+      ],
+      "b": [
+        "riscos"
+      ]
+    },
+    {
+      "origem": "gestões & incidente",
+      "solucao": "SIEM / SOC / SOAR",
+      "a": [
+        "gestoes"
+      ],
+      "b": [
+        "incidente"
+      ]
+    },
+    {
+      "origem": "gestões & incidentes",
+      "solucao": "SIEM / SOC / SOAR",
+      "a": [
+        "gestoes"
+      ],
+      "b": [
+        "incidentes"
+      ]
+    },
+    {
+      "origem": "gestões & risco",
+      "solucao": "Privacidade / LGPD / GRC",
+      "a": [
+        "gestoes"
+      ],
+      "b": [
+        "risco"
+      ]
+    },
+    {
+      "origem": "gestões & riscos",
+      "solucao": "Privacidade / LGPD / GRC",
+      "a": [
+        "gestoes"
+      ],
+      "b": [
+        "riscos"
+      ]
+    },
+    {
+      "origem": "ponto & acesso",
+      "solucao": "Rede / Wireless / Infra (ZivaSec)",
+      "a": [
+        "ponto"
+      ],
+      "b": [
+        "acesso"
+      ]
+    },
+    {
+      "origem": "ponto & acessos",
+      "solucao": "Rede / Wireless / Infra (ZivaSec)",
+      "a": [
+        "ponto"
+      ],
+      "b": [
+        "acessos"
+      ]
+    },
+    {
+      "origem": "pontos & acesso",
+      "solucao": "Rede / Wireless / Infra (ZivaSec)",
+      "a": [
+        "pontos"
+      ],
+      "b": [
+        "acesso"
+      ]
+    },
+    {
+      "origem": "pontos & acessos",
+      "solucao": "Rede / Wireless / Infra (ZivaSec)",
+      "a": [
+        "pontos"
+      ],
+      "b": [
+        "acessos"
+      ]
+    },
+    {
+      "origem": "proteção & perimetro",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "protecao"
+      ],
+      "b": [
+        "perimetro"
+      ]
+    },
+    {
+      "origem": "proteção & perimetros",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "protecao"
+      ],
+      "b": [
+        "perimetros"
+      ]
+    },
+    {
+      "origem": "proteções & dado",
+      "solucao": "DLP / Governanca de Dados",
+      "a": [
+        "protecoes"
+      ],
+      "b": [
+        "dado"
+      ]
+    },
+    {
+      "origem": "proteções & dados",
+      "solucao": "DLP / Governanca de Dados",
+      "a": [
+        "protecoes"
+      ],
+      "b": [
+        "dados"
+      ]
+    },
+    {
+      "origem": "proteções & perimetro",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "protecoes"
+      ],
+      "b": [
+        "perimetro"
+      ]
+    },
+    {
+      "origem": "proteções & perimetros",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "protecoes"
+      ],
+      "b": [
+        "perimetros"
+      ]
+    },
+    {
+      "origem": "segurança & perimetro",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "seguranca"
+      ],
+      "b": [
+        "perimetro"
+      ]
+    },
+    {
+      "origem": "segurança & perimetros",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "seguranca"
+      ],
+      "b": [
+        "perimetros"
+      ]
+    },
+    {
+      "origem": "seguranças & perimetro",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "segurancas"
+      ],
+      "b": [
+        "perimetro"
+      ]
+    },
+    {
+      "origem": "seguranças & perimetros",
+      "solucao": "NGFW / Firewall / IPS",
+      "a": [
+        "segurancas"
+      ],
+      "b": [
+        "perimetros"
+      ]
+    },
+    {
+      "origem": "teste & invasão",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "teste"
+      ],
+      "b": [
+        "invasao"
+      ]
+    },
+    {
+      "origem": "teste & invasões",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "teste"
+      ],
+      "b": [
+        "invasoes"
+      ]
+    },
+    {
+      "origem": "teste & penetração",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "teste"
+      ],
+      "b": [
+        "penetracao"
+      ]
+    },
+    {
+      "origem": "teste & penetrações",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "teste"
+      ],
+      "b": [
+        "penetracoes"
+      ]
+    },
+    {
+      "origem": "testes & invasão",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "testes"
+      ],
+      "b": [
+        "invasao"
+      ]
+    },
+    {
+      "origem": "testes & invasões",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "testes"
+      ],
+      "b": [
+        "invasoes"
+      ]
+    },
+    {
+      "origem": "testes & penetração",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "testes"
+      ],
+      "b": [
+        "penetracao"
+      ]
+    },
+    {
+      "origem": "testes & penetrações",
+      "solucao": "Gestao de Vulnerabilidades / Pentest",
+      "a": [
+        "testes"
+      ],
+      "b": [
+        "penetracoes"
+      ]
+    },
+    {
+      "origem": "servidor & torre",
+      "solucao": "Infra / HCI / Servidores",
+      "a": [
+        "servidor"
+      ],
+      "b": [
+        "torre"
+      ]
+    },
+    {
+      "origem": "servidor & tower",
+      "solucao": "Infra / HCI / Servidores",
+      "a": [
+        "servidor"
+      ],
+      "b": [
+        "tower"
+      ]
+    },
+    {
+      "origem": "servidor & rack",
+      "solucao": "Infra / HCI / Servidores",
+      "a": [
+        "servidor"
+      ],
+      "b": [
+        "rack"
+      ]
+    },
+    {
+      "origem": "servidor & blade",
+      "solucao": "Infra / HCI / Servidores",
+      "a": [
+        "servidor"
+      ],
+      "b": [
+        "blade"
+      ]
+    }
+  ]
+}

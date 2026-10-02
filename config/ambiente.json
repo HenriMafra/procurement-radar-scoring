@@ -1,0 +1,17 @@
+{
+  "_instrucao": "Caminhos e portas que mudam de maquina para maquina. DEIXE EM BRANCO (\"\") para o Radar descobrir sozinho no arranque - ele procura nos locais mais comuns. So preencha se a deteccao automatica falhar (o Verificar-Ambiente.cmd avisa quando isso acontece).",
+
+  "porta": 8790,
+
+  "_sobrePython": "Interpretador usado para rodar os scripts do Painel de Scripts. ATENCAO: nao adianta apontar para o python.exe da pasta WindowsApps - aquilo e um atalho de 0 byte da Microsoft Store que sai com erro 9009 sem executar nada. Deixe vazio para o Radar achar o Python de verdade.",
+  "python": "",
+
+  "_sobrePainelROs": "Pasta do painel Streamlit de Gestao de ROs (a que tem o app.py). Se a pessoa nao usa esse painel, deixe vazio: a aba mostra um aviso e o resto do Radar funciona normal.",
+  "painelROs": {
+    "pasta": "",
+    "porta": 8501
+  },
+
+  "_sobrePainelScripts": "Arquivo scripts.json do Painel de Scripts (lista dos .py que aparecem para executar). Opcional.",
+  "painelScripts": ""
+}

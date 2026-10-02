@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Manual de Construção — Radar de Boletins</title>
+<style>
+  @page { size: A4; margin: 16mm 18mm; }
+  * { box-sizing: border-box; }
+  :root{
+    --ink:#1C1A17; --ink-soft:#5B564C; --accent:#22506E; --accent-2:#835507;
+    --paper:#FFFFFF; --wash:#F6F1E4; --line:#D6CDB8;
+  }
+  body{ font-family:"Segoe UI", Calibri, Arial, sans-serif; color:var(--ink); font-size:10.1pt; line-height:1.38; margin:0; background:var(--paper); }
+  .eyebrow{ font:700 8pt/1 "Segoe UI",sans-serif; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-2); margin:0 0 6px; }
+  h1{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:21pt; color:var(--accent); margin:0 0 5px; line-height:1.15; letter-spacing:-.01em; }
+  .sub{ font:400 10pt/1.4 "Segoe UI",sans-serif; color:var(--ink-soft); margin:0 0 13px; padding-bottom:9px; border-bottom:1px solid var(--line); }
+  h2{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:13.8pt; color:var(--accent); margin:18px 0 7px; padding-bottom:4px; border-bottom:1px solid var(--line); }
+  h3{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:11pt; color:#2B2B2B; margin:12px 0 5px; }
+  p{ margin:0 0 7px; text-align:justify; }
+  ul,ol{ margin:0 0 8px; padding-left:18px; }
+  li{ margin-bottom:2px; }
+  table{ width:100%; border-collapse:collapse; margin:7px 0 10px; font-size:9pt; }
+  th,td{ border:1px solid var(--line); padding:3px 6px; text-align:left; vertical-align:top; }
+  th{ background:var(--wash); font-weight:700; color:var(--accent); font-size:8pt; letter-spacing:.03em; text-transform:uppercase; }
+  .cod{ font-family:Consolas,monospace; background:var(--wash); padding:1px 5px; border-radius:2px; font-size:9pt; border:1px solid var(--line); }
+  .prompt{ background:#211E19; color:#F3EFE4; font-family:Consolas,monospace; font-size:8.1pt; white-space:pre-wrap; padding:10px 12px; border-radius:2px; margin:6px 0 9px; line-height:1.35; border-left:3px solid var(--accent-2); }
+  .prompt .rot{ display:block; font:700 7.3pt/1 "Segoe UI",sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#C9A15C; margin-bottom:7px; }
+  .nota{ border-left:3px solid var(--accent); background:var(--wash); padding:7px 12px; margin:6px 0 9px; }
+  .nota .rot{ display:block; font:700 7.5pt/1 "Segoe UI",sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:3px; }
+  .nota.alerta{ border-left-color:var(--accent-2); }
+  .nota.alerta .rot{ color:var(--accent-2); }
+  .quebra{ page-break-before:always; }
+  .rod{ margin-top:8px; padding-top:5px; border-top:1px solid var(--line); font-size:8.3pt; color:var(--ink-soft); }
+  .roteiro{ margin:8px 0 12px; padding:10px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .roteiro .rot{ display:block; font:700 7.5pt/1 "Segoe UI",sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-2); margin-bottom:5px; }
+  .roteiro ol{ columns:2; column-gap:22px; margin:0; padding-left:16px; }
+  .roteiro li{ break-inside:avoid; font-size:9.3pt; }
+</style></head><body>
+
+<p class="eyebrow">ENTERPRISECORE Radar · Documentação Técnica</p>
+<h1>Manual de Construção — Radar de Boletins</h1>
+<p class="sub">Como reconstruir o sistema do zero, com uma IA de codificação, para quem nunca programou</p>
+
+<h2>0. Antes de começar</h2>
+<p>Este documento ensina a construir o ENTERPRISECORE Radar (módulo Boletins) inteiro, do zero, usando uma IA de codificação
+como o <b>Claude Code</b> como parceira de construção. Ele não presume conhecimento de programação. Presume só que
+você vai copiar os textos em destaque (os "prompts") e colar na conversa com a IA, e vai olhar o resultado antes de
+seguir para o próximo passo.</p>
+
+<h3>A estratégia: fases pequenas, cada uma com um jeito de verificar</h3>
+<p>Havia duas formas possíveis de organizar este manual: <b>(a)</b> um prompt único e gigante pedindo "construa o
+sistema inteiro", ou <b>(b)</b> uma sequência de fases pequenas, cada uma com uma forma concreta de conferir que
+funcionou antes de avançar. Este manual usa a <b>(b)</b>. A razão não é teórica; é a experiência real de construir
+e manter este sistema:</p>
+<ul>
+<li>Pedidos grandes demais fazem a IA acertar 90% e errar um detalhe pequeno que só aparece muito depois. Aí fica
+difícil saber qual das cem linhas mudadas causou o problema.</li>
+<li>Uma fase pequena com verificação imediata isola o erro no instante em que ele aparece. Se a Fase 3 quebrar, você
+sabe que é da Fase 3, porque as fases 1 e 2 já foram confirmadas funcionando.</li>
+<li>Quando algo dá errado, <b>a ação certa é colar a mensagem de erro exata de volta na IA</b>, não tentar descrever
+o problema com suas palavras. A IA lê o erro melhor do que lê a sua descrição dele.</li>
+</ul>
+<div class="nota"><span class="rot">Verificação</span>Depois de cada fase deste manual, existe uma linha assim, dizendo exatamente o que olhar antes de
+ir para a próxima. Não pule — é isso que torna o processo seguro para quem não programa.</div>
+
+<h3>Por que esta stack (e não outra mais comum)</h3>
+<table>
+<tr><th>Peça</th><th>Por que essa escolha</th></tr>
+<tr><td>Node.js puro, sem framework</td><td>A máquina onde isso roda tem acesso restrito a instalar pacotes (política de TI corporativa). Node puro não depende de <span class="cod">npm install</span> nenhum.</td></tr>
+<tr><td>PowerShell + Excel COM</td><td>Ler <span class="cod">.xlsx</span> sem biblioteca externa. O Excel já está instalado na máquina — COM (Component Object Model) é a forma nativa do Windows de controlar programas Office por script.</td></tr>
+<tr><td>OpenXML puro para <b>escrever</b> o Excel de saída</td><td>Escrever no Excel via COM (<span class="cod">Range.Value2 = array</span>) trava com erro de memória em planilhas grandes. Gerar o <span class="cod">.xlsx</span> manipulando o XML compactado por dentro é mais chato de escrever, mas não trava.</td></tr>
+<tr><td>Outlook COM para o <span class="cod">.oft</span></td><td>É o único jeito de gerar um modelo de e-mail do Outlook clássico programaticamente no Windows.</td></tr>
+</table>
+
+<div class="roteiro"><span class="rot">Roteiro das fases</span>
+<ol>
+<li>Servidor Node mínimo</li>
+<li>O config JSON — o cérebro do sistema</li>
+<li>Ler os boletins .xlsx (PowerShell + Excel COM)</li>
+<li>O motor de score</li>
+<li>Escrever a planilha de saída (OpenXML puro)</li>
+<li>A interface (cards, busca, filtros, dossiê para IA)</li>
+<li>Gerar o modelo de e-mail .OFT (Outlook COM)</li>
+<li>Empacotar, versionar e publicar no GitHub</li>
+<li>Manter e calibrar depois de pronto</li>
+</ol>
+</div>
+
+<h2>Fase 1 — Servidor Node mínimo</h2>
+<p><b>Objetivo:</b> um servidor HTTP que sobe na porta 8790 e serve uma página HTML fixa. É a fundação sobre a qual
+tudo mais entra depois.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Quero criar um app local em Windows chamado "ENTERPRISECORE Radar". Comece pela base:
+
+1. Crie a pasta do projeto com subpastas app/, config/, data/, scripts/.
+2. Em app/server.js, escreva um servidor HTTP em Node.js PURO (módulo "http" nativo,
+   sem Express nem nenhum pacote externo) que:
+   - sobe na porta 8790
+   - na rota GET / devolve um app/ui.html fixo (crie um ui.html simples de teste,
+     so um "Ola Mundo", por enquanto)
+   - imprime no console "Servidor rodando em http://localhost:8790"
+3. Crie um arquivo Abrir-App.cmd na raiz que rode "node app\server.js" numa janela
+   propria e depois abra o navegador em http://localhost:8790 automaticamente.
+
+Depois de escrever, me diga exatamente que comando rodar para testar.</div>
+<div class="nota"><span class="rot">Verificação</span>Rode o <span class="cod">Abrir-App.cmd</span>. Uma janela preta deve abrir e ficar parada — é o
+servidor rodando, não um travamento — e o navegador deve abrir sozinho mostrando a página de teste.</div>
+<div class="nota alerta"><span class="rot">Atenção</span>Se a porta 8790 já estiver em uso (outro processo antigo), o Node erra com
+<span class="cod">EADDRINUSE</span>. Cole esse erro na IA — ela vai te ajudar a encontrar e fechar o processo antigo,
+ou trocar a porta.</div>
+
+<h2>Fase 2 — O config JSON (o cérebro do sistema)</h2>
+<p><b>Objetivo:</b> o arquivo que descreve <i>o que a empresa vende</i>, para o motor de pontuação usar depois. Fazer
+essa fase antes do motor de pontuação é proposital: escrever o dado antes da lógica deixa claro o que a lógica
+precisa ler.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Agora crie config/escopo-enterprisecore.json com esta estrutura (é o "cerebro" do sistema — a logica de
+pontuacao que vamos escrever depois so LE este arquivo, nunca tem numero fixo no codigo):
+
+- "categorias": lista de objetos, cada um com "solucao" (nome da categoria, ex: "NGFW / Firewall / IPS"),
+  "fabricantePadrao" (marca sugerida quando nao ha marca no texto) e "palavrasChave" (lista de termos em
+  MINUSCULO E SEM ACENTO que, se aparecerem no texto do edital, indicam essa categoria).
+- "fabricantes": lista de marcas que a empresa revende de verdade, cada uma com "nome", "solucao" (a categoria
+  correspondente) e "aliases" (nomes alternativos/produtos da marca).
+- "concorrentes": mesma ideia, mas marcas de concorrentes (uma citacao de concorrente e sinal de oportunidade
+  de troca de fornecedor, nao de venda direta).
+- "contextosForaEscopo": lista de termos que indicam OUTRA area de negocio (ex: mobiliario, obra civil,
+  alimentacao) — servem para a pontuacao desconfiar quando aparecerem.
+- "pesos": numeros de calibragem (quantos pontos cada sinal vale). NENHUM peso deve ficar
+  fixo no codigo depois — tudo lido daqui.
+- "faixas": as faixas de classificacao final (ex: "Prioridade Maxima" a partir de 75 pontos,
+  "Alta" a partir de 55, e assim por diante), cada uma com "nome", "min" e "cor".
+
+Popule com 3 ou 4 categorias de exemplo (ex.: Firewall, Backup, Rede) so para eu conseguir testar
+depois. Eu substituo pelo catalogo real da empresa mais tarde.</div>
+<div class="nota"><span class="rot">Verificação</span>Abra o arquivo gerado num editor de texto e confira que é um JSON válido — sem vírgula sobrando
+no fim de lista, sem chave sem fechar. Se tiver dúvida, cole o conteúdo inteiro na IA e peça "confira se este JSON é
+válido".</div>
+
+<h2>Fase 3 — Ler os boletins .xlsx</h2>
+<p><b>Objetivo:</b> um script PowerShell que abre os <span class="cod">.xlsx</span> baixados do Conlicitação via
+Excel COM, identifica as colunas pelo <b>nome do cabeçalho</b> (não pela posição fixa — o boletim muda a ordem das
+colunas de tempos em tempos) e devolve uma lista de objetos com órgão, objeto, UF, data do pregão, valor estimado
+etc.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Crie scripts/processar-boletins.ps1. Ele deve:
+
+1. Ler todos os arquivos .xlsx da pasta data/boletins usando Excel COM
+   (New-Object -ComObject Excel.Application), em modo invisivel e so leitura.
+2. Ler a LINHA 1 de cada planilha como cabecalho, e montar um mapa "nome da coluna -> indice",
+   procurando pelo NOME (com uma funcao FindCol que aceita um padrao de regex), nao por numero
+   fixo de coluna - os boletins mudam a ordem das colunas ao longo do tempo.
+3. Para cada linha de dado, montar um objeto com: numeroConlicitacao, orgao, objeto, uf,
+   numeroPregao, uasg, dataPregao, valorEstimado, situacao.
+4. Manter so as linhas onde a Situacao seja "NOVA" (comparacao sem diferenciar maiusculas).
+5. No fim, salvar tudo como JSON em data/dados-brutos.json.
+
+Pontos IMPORTANTES de robustez, porque boletim real vem sujo:
+- O arquivo .ps1 tem que ser salvo em ASCII PURO no codigo (comentarios podem ter acento
+  representado como [char]0x00E9 em vez de letra acentuada direta) - arquivo .ps1 com acento
+  direto e sem BOM e lido errado pelo PowerShell 5.1 e corrompe silenciosamente.
+- Ao converter texto de valor monetario para numero, USE SEMPRE
+  [double]::TryParse($texto, [Globalization.NumberStyles]::Float, [Globalization.CultureInfo]::InvariantCulture, [ref]$var)
+  - nunca TryParse sem cultura explicita, porque em maquina com Windows configurado em
+  portugues do Brasil o ponto decimal e interpretado como separador de milhar e o valor
+  sai errado (silenciosamente, sem erro nenhum).
+- Ao procurar a coluna de "Estado/UF" por regex de nome de cabecalho, use um padrao que NAO
+  bata tambem com "Valor Estimado" (que contem a palavra "Estimado", que comeca com as mesmas
+  letras "Est"). Prefira o padrao completo "estado" em vez de so "est".
+
+Depois de escrever, rode o script contra um .xlsx de teste e me mostre o resultado.</div>
+<div class="nota"><span class="rot">Verificação</span>Rode o script. Ele deve terminar sem erro e gerar <span class="cod">data\dados-brutos.json</span>
+com pelo menos uma licitação dentro, com todos os campos preenchidos corretamente — principalmente confira o
+<b>valor estimado</b> (compare com o que está escrito no boletim de verdade) e a <b>UF</b>.</div>
+<div class="nota alerta"><span class="rot">Atenção</span>Estes dois bugs (cultura do TryParse e colisão de regex "Est") já aconteceram de verdade neste
+projeto: o valor estimado saía <b>10 vezes maior</b> que o real, e a UF saía em branco mesmo estando preenchida na
+planilha. Os dois só foram descobertos porque alguém comparou o número da tela com o número do boletim de verdade.
+Faça essa comparação manual pelo menos uma vez nesta fase.</div>
+
+<h2>Fase 4 — O motor de score</h2>
+<p><b>Objetivo:</b> a função que lê o objeto de cada licitação e devolve uma nota de 0 a 100, com a explicação de
+cada ponto somado ou tirado. É a peça mais importante do sistema inteiro, e por isso vale a pena construir em
+sub-passos, não de uma vez.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Agora, no mesmo scripts/processar-boletins.ps1, adicione uma funcao AvaliarItem($item) que
+calcula um score de 0 a 100. Construa em camadas, cada uma somando ou subtraindo do total, e GUARDANDO em
+uma lista "porques" o nome do sinal e quantos pontos ele deu (isso e essencial: o usuario final precisa
+ver o PORQUE da nota, nao so o numero):
+
+CAMADA 1 - Casamento de categoria: normalize o texto do objeto (minusculo, sem acento, pontuacao
+vira espaco) e procure cada palavraChave do config/escopo-enterprisecore.json como PALAVRA INTEIRA
+(com espaco antes e depois, nao substring solta - "pam" nao pode casar dentro de "equipamento").
+Cada categoria encontrada soma pontos (config "pesos.categoriaPrimeira" para a primeira,
+menos para as seguintes).
+
+CAMADA 2 - Marca parceira ou concorrente: se o nome ou alias de uma marca do config aparecer no
+texto, soma pontos (marca parceira vale mais que concorrente).
+
+CAMADA 3 - Termo de outra area: se 2 ou mais termos de "contextosForaEscopo" aparecerem E
+formarem a MAIORIA dos sinais encontrados (nao so uma contagem fixa), SUBTRAI pontos - a ideia
+e reconhecer quando o edital e de outro ramo e so tem 1-2 palavras nossas por acaso.
+
+CAMADA 4 - Prazo: calcule quantos dias faltam para a data do pregao. Prazo confortavel soma
+pontos pequenos, prazo vencido subtrai bastante - MAS SO quando ja existe alguma aderencia
+tecnica (camada 1 encontrou algo). Nao faz sentido premiar prazo de um edital que nao e nosso.
+
+No final, classifique em uma FAIXA (config "faixas") de acordo com o total.
+
+Depois de escrever, rode contra os dados de teste da Fase 3 e me mostre o score e o "porques"
+de cada licitacao.</div>
+<div class="nota"><span class="rot">Verificação</span>Pegue uma licitação de teste cujo texto você já leu com seus próprios olhos. O score bate com o
+que você julgaria manualmente? A lista de "porquês" faz sentido, e cada item ali realmente aparece no texto do
+objeto?</div>
+<div class="nota alerta"><span class="rot">Atenção</span>Uma palavra genérica (como "resposta", "auditoria" ou siglas de dois-três caracteres) pode achar
+"sinal" em texto que não tem nada a ver com o que a empresa vende. Neste projeto, cerca de 30% dos falsos positivos
+vieram de palavra solta demais no dicionário. Sempre que adicionar uma palavra nova, teste-a contra vários exemplos
+de texto antes de confiar nela.</div>
+
+<h3>Fase 4b — As camadas de precisão (construir só depois que a Fase 4 estiver funcionando)</h3>
+<p>As quatro camadas acima classificam razoavelmente bem, mas <b>o motor real deste projeto tem 13 sinais
+distintos</b>, não 4. Os outros 9 só nasceram porque casos reais, com dados reais, expuseram erros que a versão
+simples não via. Este manual não finge que dá para adivinhar esses refinamentos de antemão: eles vieram de meses de
+calibragem contra editais de verdade. O que dá para ensinar é o <b>mecanismo</b> de cada um — os números exatos de
+calibragem (quantos pontos, qual limiar) são específicos dos dados desta empresa e devem ser recalibrados com os
+seus próprios exemplos, nunca copiados como se fossem universais.</p>
+
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Adicione a AvaliarItem() estas camadas extras, cada uma como um refinamento separado e
+testavel:
+
+5. TERMOS PROIBIDOS x CONTEXTO DE OUTRA AREA - sao dois mecanismos diferentes, nao um so:
+   - "termosExcluidos" no config: penalidade FIXA e forte quando um termo aparece (ex.: um
+     termo que so existe em outro ramo de negocio completamente, tipo "merenda escolar").
+   - "contextosForaEscopo": penalidade PROPORCIONAL (a da Camada 3) - dispara por RAZAO entre
+     sinais de fora e sinais de dentro, nao por contagem fixa.
+   Motivo de separar: alguns termos sao prova definitiva sozinhos; outros so viram prova
+   quando dominam o texto.
+
+6. PORTE DO CONTRATO: se o boletim trouxer um valor estimado, some pontos por faixa de valor
+   (contrato grande desempata dentro da mesma faixa tecnica) - MAS SO quando ja ha aderencia
+   tecnica minima. Sem essa trava, um contrato gigante de outra area (ex: obra civil que so
+   cita "datacenter" de passagem) ganha pontos por tamanho sem ser nosso.
+
+7. PROJETO INTEGRADO: bonus extra quando 2+ categorias do portfolio aparecem no MESMO edital
+   (e o sinal for denso, nao disperso num texto gigante) - indica solucao integrada, nao
+   coincidencia. NAO aplique esse bonus quando o edital for Registro de Precos (ver item 9) -
+   la, varias categorias so significam "cesta variada de produtos", nao projeto integrado.
+
+8. ESPECIFICIDADE DA PALAVRA: no config, separe as palavras-chave de cada categoria em duas
+   listas extras: "nucleo" (termo que so existe no seu ramo, sem ambiguidade - ex: um nome de
+   categoria de produto de seguranca bem especifico) e "ambiguas" (palavra que tambem aparece
+   em textos de outra coisa - ex: uma palavra generica de TI que serve pra varias areas).
+   Palavra de nucleo multiplica os pontos da categoria para cima; palavra so-ambigua sozinha
+   multiplica para baixo (ela sozinha nao prova nada, mas conta se vier ACOMPANHADA de outra
+   palavra da mesma categoria - duas ambiguas juntas da mesma area formam uma expressao,
+   como "backup" + "armazenamento" apontando pra a mesma solucao).
+
+9. A ABERTURA DO OBJETO DECLARA O QUE SE COMPRA: o edital sempre diz o que esta comprando nos
+   primeiros caracteres do objeto, e detalha depois. Extraia so a ABERTURA (por exemplo os
+   primeiros 150-200 caracteres, sem contar prefixos padrao tipo "* Licitacao Eletronica *")
+   e verifique se ela tem alguma palavra ESPECIFICA nossa (nao ambigua) ou marca parceira. Se
+   a abertura so tem termo de OUTRA area e nada nosso, os pontos de categoria ganhos por
+   palavra ambigua no resto do texto devem ser CANCELADOS (nao so multados com penalidade
+   fixa) - senao um contrato de outra area com vocabulario ambiguo espalhado ainda passa.
+
+10. REGISTRO DE PRECOS (RP): quando o boletim marcar o edital como Registro de Precos e ele
+    vier dividido em itens/lotes, a proporcao de itens que sao nossos NAO deve reduzir a
+    aderencia tecnica do mesmo jeito que reduziria numa contratacao de lote unico - em RP o
+    comprador pode fechar so nos itens que quiser. Em vez disso, aplique um DESCONTO GRADUADO
+    proporcional ao tamanho da fatia (fatia pequena vale menos esforco de disputa, mas nao e
+    fora de escopo).
+
+Depois de cada uma, rode contra os MESMOS exemplos de teste e confirme que nada que estava
+certo ficou errado - anote a nota de cada exemplo antes e depois de cada camada nova.</div>
+<div class="nota"><span class="rot">Verificação</span>Depois de adicionar as camadas 5 a 10, rode a lista completa de exemplos de teste de novo e
+compare com a rodada anterior. Alguma nota que estava certa mudou para pior? Se sim, a camada nova está grande
+demais para o caso — ela deveria só ter mexido nos casos que a motivaram.</div>
+<div class="nota alerta"><span class="rot">Atenção</span>Cada camada nova deve ser motivada por um <b>caso real classificado errado</b>, nunca adicionada
+"por precaução". Uma regra nova generalizada de um único exemplo é frágil: neste projeto, uma regra criada a partir
+de um caso só teve que ser revertida na rodada seguinte porque o próprio caso que a motivou acabou sendo, na
+verdade, uma exceção.</div>
+
+<h2>Fase 5 — Escrever a planilha de saída</h2>
+<p><b>Objetivo:</b> gerar um <span class="cod">.xlsx</span> com o resultado sem usar Excel COM para escrever, porque
+esse caminho trava com erro de memória em planilhas grandes. A saída é manipular o XML compactado diretamente.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Adicione a scripts/processar-boletins.ps1 uma funcao que grava o resultado como .xlsx usando
+OpenXML puro (System.IO.Packaging), NAO Excel COM (Range.Value2 = array trava com erro de
+memoria em planilhas com muitas linhas). A planilha deve ter:
+
+- Aba "Ranking": orgao, objeto (resumido), score, faixa, link - ordenada do maior score
+  para o menor.
+- Cabecalho congelado (freeze panes) na primeira linha.
+- A celula de score colorida de acordo com a cor da faixa (config "faixas[].cor").
+- Uma coluna de link como hyperlink de verdade clicavel (celula de formula HYPERLINK
+  precisa do atributo t="str" no XML, senao o Excel recusa abrir o arquivo - e o erro so
+  aparece ao ABRIR o arquivo depois, o XML fica bem formado e nao acusa erro na hora de gravar).
+
+Rode e abra o .xlsx gerado no Excel de verdade para confirmar que abre sem erro de reparo.</div>
+<div class="nota"><span class="rot">Verificação</span>Abra o <span class="cod">.xlsx</span> gerado no Excel de verdade (não só confie que "não deu erro
+no script"). Se o Excel disser algo como "encontramos um problema com algum conteúdo" e oferecer para reparar, a
+fase não está pronta — cole essa mensagem do Excel na IA.</div>
+
+<h2>Fase 6 — A interface</h2>
+<p><b>Objetivo:</b> substituir a página de teste da Fase 1 pela interface real: lista de cartões, busca, filtros e o
+botão de montar o dossiê para colar numa IA.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Substitua app/ui.html por uma pagina real de uma unica tela (HTML + CSS + JavaScript, sem
+framework, tudo num arquivo so). Ela deve:
+
+1. Ao carregar, buscar os dados processados (crie uma rota GET /api/dados no server.js que
+   devolve o conteudo de data/dados.json).
+2. Mostrar cada licitacao como um "cartao": orgao, score grande, faixa colorida, objeto
+   (truncado com botao "ver mais"), lista de "porques" com os pontos de cada sinal.
+3. Uma barra de busca no topo que filtra por orgao, objeto, fabricante OU numero do pregao/
+   Conlicitacao - aceitando o numero com ou sem pontuacao (19280729 e 19.280.729 tem que
+   achar a mesma licitacao).
+4. Filtros por faixa (botoes: Todas / Parceiros / Concorrentes / Escopo Geral / Baixa).
+5. Um botao "Processar boletins" que chama uma rota POST /api/processar no server.js, que
+   roda o processar-boletins.ps1 via child_process e recarrega a lista quando terminar.
+6. Um botao "Copiar dossie para IA" que monta um texto grande juntando: uma instrucao fixa
+   explicando o que a IA deve avaliar, o config/escopo-enterprisecore.json inteiro (para a IA saber
+   o que a empresa vende) e os dados de cada licitacao SELECIONADA (com checkbox em cada
+   cartao) - e copia esse texto para a area de transferencia.
+
+Use uma paleta de cores sobria (tons terrosos, sem neon) definida em variaveis CSS no :root,
+e deixe pronto para um modo escuro por cima das mesmas variaveis.</div>
+<div class="nota"><span class="rot">Verificação</span>Clique em cada botão da interface pelo menos uma vez. Busque por um número de pregão com e sem
+pontuação e confirme que os dois formatos acham a mesma licitação. Copie o dossiê e cole num editor de texto
+qualquer para conferir que veio completo.</div>
+<div class="nota alerta"><span class="rot">Atenção</span>Um único caractere de escape errado dentro de um template literal do JavaScript (por exemplo um
+apóstrofo mal escapado dentro de uma string entre crases) derruba o <span class="cod">&lt;script&gt;</span> inteiro.
+A página carrega, mas <b>nenhum</b> botão funciona, e não aparece erro nenhum visível na tela. Se isso acontecer,
+peça à IA para "verificar a sintaxe do JavaScript dentro do ui.html" — ela consegue rodar um verificador de sintaxe
+para achar a linha exata.</div>
+
+<h2>Fase 7 — Gerar o modelo de e-mail .OFT</h2>
+<p><b>Objetivo:</b> um botão que baixa um arquivo <span class="cod">.oft</span> pronto para abrir no Outlook, com o
+conteúdo já preenchido, sem enviar nada e sem abrir o Outlook na tela da pessoa.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Crie scripts/gerar-oft.ps1: recebe uma lista de licitacoes (via um arquivo JSON temporario) e
+monta o corpo de um e-mail em HTML com os dados de cada uma. Use Outlook COM
+(New-Object -ComObject Outlook.Application) para criar um item de e-mail novo (nao enviado,
+nao aberto na tela) e salve-o com metodo SaveAs(caminho, 2) - o "2" e o codigo que salva como
+modelo .oft (OlSaveAsType.olTemplate), diferente de salvar como .msg.
+
+No server.js, crie uma rota POST /api/gerar-oft que recebe as licitacoes selecionadas, roda
+este script e devolve o arquivo .oft para download.
+
+IMPORTANTE: nao use CreateItemFromTemplate nem qualquer metodo que ABRA a janela do Outlook
+ou do e-mail na tela do usuario - o objetivo e so gerar o arquivo, silenciosamente, sem
+interromper quem esta usando o computador.</div>
+<div class="nota"><span class="rot">Verificação</span>Baixe o <span class="cod">.oft</span> gerado e dê duplo clique nele. Deve abrir uma janela de
+e-mail <b>nova</b> no Outlook, com o conteúdo já preenchido, pronta para editar o destinatário e enviar manualmente.
+O sistema nunca deve enviar sozinho.</div>
+
+<h2>Fase 8 — Empacotar, versionar e publicar</h2>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Crie:
+1. Um .gitignore que exclua dados reais (data/boletins/*.xlsx, data/dados.json, config/
+   contatos.json) mas mantenha o codigo e a estrutura de pastas (usando um arquivo .gitkeep
+   dentro de pastas que precisam existir vazias, ja que o git nao versiona pasta vazia).
+2. Um scripts/publicar-versao.ps1 que: confere que nada da lista proibida esta na fila do
+   git, faz commit, cria uma tag de versao (v1.0.X, incrementando sozinho), empurra para o
+   GitHub e cria uma Release (pagina de download) via API do GitHub.
+3. Um INSTALACAO.md explicando para quem nunca usou git como baixar e rodar pela primeira vez.
+
+No publicar-versao.ps1, NAO use "git push --tags" (empurra todas as tags de uma vez e uma
+tag antiga com conflito reprova o push inteiro) - empurre so a tag da vez. E nao use
+$ErrorActionPreference = 'Stop' junto de comando git (o git escreve aviso normal no stderr
+e isso vira erro fatal sem motivo).</div>
+<div class="nota"><span class="rot">Verificação</span>Rode o script de publicação uma vez. Confirme no site do GitHub que apareceu a nova versão, e
+baixe o .zip da Release para confirmar que os arquivos certos vieram (e nenhum dado sensível).</div>
+
+<h2>Fase 9 — Depois de pronto: manter e calibrar</h2>
+<p>O sistema não termina na Fase 8. O dicionário de palavras-chave precisa de ajuste contínuo conforme editais
+reais aparecem. A forma que funcionou aqui: sempre que uma licitação estiver classificada errado, pergunte à IA
+qual <b>propriedade geral</b> do texto separa esse caso dos que estão certos, em vez de corrigir só aquele caso.
+E sempre meça o efeito da mudança contra uma lista grande de licitações antes de publicar, não só contra o caso que
+motivou a mudança.</p>
+
+<p class="rod">ENTERPRISECORE Radar — Manual de Construção, Radar de Boletins. Este roteiro reflete a ordem real em que o
+sistema foi construído e as armadilhas que realmente aconteceram durante a construção. Não é um roteiro teórico.</p>
+</body></html>

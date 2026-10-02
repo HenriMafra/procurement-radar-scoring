@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Manual de Uso — Radar de Pregões 24/7</title>
+<style>
+  @page { size: A4; margin: 16mm 18mm; }
+  * { box-sizing: border-box; }
+  :root{
+    --ink:#1C1A17; --ink-soft:#5B564C; --accent:#22506E; --accent-2:#835507;
+    --paper:#FFFFFF; --wash:#F6F1E4; --line:#D6CDB8;
+  }
+  body{ font-family:"Segoe UI", Calibri, Arial, sans-serif; color:var(--ink); font-size:10.3pt; line-height:1.42; margin:0; background:var(--paper); }
+  .eyebrow{ font:700 8pt/1 "Segoe UI",sans-serif; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-2); margin:0 0 6px; }
+  h1{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:22pt; color:var(--accent); margin:0 0 5px; line-height:1.15; letter-spacing:-.01em; }
+  .sub{ font:400 10pt/1.4 "Segoe UI",sans-serif; color:var(--ink-soft); margin:0 0 14px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+  h2{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:14.5pt; color:var(--accent); margin:22px 0 8px; padding-bottom:5px; border-bottom:1px solid var(--line); }
+  h3{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:11.5pt; color:#2B2B2B; margin:14px 0 6px; }
+  p{ margin:0 0 8px; text-align:justify; }
+  ul,ol{ margin:0 0 9px; padding-left:19px; }
+  li{ margin-bottom:3px; }
+  table{ width:100%; border-collapse:collapse; margin:8px 0 12px; font-size:9pt; }
+  th,td{ border:1px solid var(--line); padding:4px 7px; text-align:left; vertical-align:top; }
+  th{ background:var(--wash); font-weight:700; color:var(--accent); font-size:8pt; letter-spacing:.03em; text-transform:uppercase; }
+  .cod{ font-family:Consolas,monospace; background:var(--wash); padding:1px 5px; border-radius:2px; font-size:9pt; border:1px solid var(--line); }
+  ol.passos{ list-style:none; counter-reset:p; padding:0; margin:8px 0 12px; }
+  ol.passos > li{ counter-increment:p; position:relative; padding:7px 0 7px 36px; border-top:1px solid var(--line); }
+  ol.passos > li:first-child{ border-top:none; }
+  ol.passos > li::before{ content:counter(p); position:absolute; left:0; top:9px; width:22px; height:22px; border-radius:50%; background:var(--accent); color:#fff; font-size:10pt; font-weight:700; display:flex; align-items:center; justify-content:center; }
+  .passos .titulo{ display:block; font-weight:700; font-size:10.3pt; }
+  .passos .desc{ display:block; font-size:9.5pt; color:var(--ink-soft); margin-top:2px; }
+  .nota{ border-left:3px solid var(--accent); background:var(--wash); padding:9px 14px; margin:9px 0 13px; }
+  .nota .rot{ display:block; font:700 7.8pt/1 "Segoe UI",sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:4px; }
+  .nota.alerta{ border-left-color:var(--accent-2); }
+  .nota.alerta .rot{ color:var(--accent-2); }
+  .quebra{ page-break-before:always; }
+  .rod{ margin-top:16px; padding-top:8px; border-top:1px solid var(--line); font-size:8.3pt; color:var(--ink-soft); }
+</style></head><body>
+
+<p class="eyebrow">ENTERPRISECORE Radar · Documentação Técnica</p>
+<h1>Manual de Uso — Radar de Pregões 24/7</h1>
+<p class="sub">Vigilância ativa em salas de disputa, monitoramento de atos oficiais e despacho automatizado de alertas de certames</p>
+
+<h2>1. O que é</h2>
+<p>O <b>Radar de Pregões (Vigilância 24/7)</b> é o módulo de monitoramento contínuo de licitações públicas em andamento.
+Enquanto o Radar de Boletins atua na triagem de oportunidades recém-publicadas (D-1), a Vigilância acompanha os certames
+que a equipe já decidiu disputar ou monitorar estrategicamente.</p>
+<p>O sistema consulta automaticamente os portais governamentais — <b>Compras.gov.br (PNCP)</b>, <b>Portal de Compras Públicas (PCP)</b>
+e <b>Licitações-e (Banco do Brasil)</b> —, detectando alterações de situação (suspensões, reaberturas, adjudicações, homologações)
+e mensagens postadas pelo pregoeiro na sala de disputa pública. Ao identificar qualquer fato relevante, dispara e-mails de alerta
+imediatos para os responsáveis designados.</p>
+
+<h2>2. Indicadores Operacionais (Painel KPI)</h2>
+<p>No topo da aba de vigilância, quatro cartões consolidam a situação da operação em tempo real:</p>
+<table>
+  <tr><th>Indicador</th><th>Significado</th><th>Ação Recomendada</th></tr>
+  <tr>
+    <td><b>Pregões no Radar</b></td>
+    <td>Quantidade total de certames monitorados ativamente no sistema.</td>
+    <td>Mantenha apenas processos com interesse comercial ativo; remova os finalizados.</td>
+  </tr>
+  <tr>
+    <td><b>Movimentação Não Lida</b></td>
+    <td>Número de pregões que tiveram novos atos oficiais ou mensagens de pregoeiro que ainda não foram revisados pela equipe.</td>
+    <td>Prioridade máxima: abra os cards sinalizados em vermelho e examine o histórico de eventos.</td>
+  </tr>
+  <tr>
+    <td><b>Valor Estimado Somado</b></td>
+    <td>Volume financeiro global de todos os certames sob monitoramento.</td>
+    <td>Visão do pipeline total em disputa pelo Enterprise IT Group nos portais eletrônicos.</td>
+  </tr>
+  <tr>
+    <td><b>Vigilância 24/7</b></td>
+    <td>Status do serviço em segundo plano e indicador de periodicidade (varredura a cada 1 minuto).</td>
+    <td>Confira se o ponto verde permanece ativo, assegurando consultas ininterruptas.</td>
+  </tr>
+</table>
+
+<h2>3. Como Cadastrar um Novo Pregão</h2>
+<p>O cadastro de um pregão para vigilância é feito clicando no bloco expansível <b>+ Cadastrar Novo Pregão no Radar &amp; Responsáveis</b>:</p>
+
+<ol class="passos">
+  <li>
+    <span class="titulo">Selecionar o Portal Eletrônico</span>
+    <span class="desc">Escolha entre <b>Compras.gov.br (PNCP)</b>, <b>Licitações-e (Banco do Brasil)</b> ou <b>Portal de Compras Públicas</b>. Cada portal exige parâmetros de identificação próprios.</span>
+  </li>
+  <li>
+    <span class="titulo">Informar os Dados de Identificação</span>
+    <span class="desc">Para o Compras.gov: digite a <b>UASG</b> (6 dígitos numéricos, ex.: <span class="cod">70001</span>), o <b>Número do Pregão</b> e o <b>Ano</b> (4 dígitos). Para o Licitações-e: digite o <b>Número da Licitação</b> (ex.: <span class="cod">1095398</span>). Para o PCP: informe o link ou termo de identificação.</span>
+  </li>
+  <li>
+    <span class="titulo">Atribuir os Responsáveis por E-mail</span>
+    <span class="desc">Marque os profissionais da ENTERPRISECORE que devem ser notificados imediatamente sempre que houver movimentação neste certame. Podem ser selecionados contatos do catálogo ou digitados e-mails adicionais.</span>
+  </li>
+  <li>
+    <span class="titulo">Validação Automática e Registro</span>
+    <span class="desc">Ao clicar em salvar, o Radar consulta a API oficial em tempo real para verificar se o pregão existe, carrega o órgão e objeto oficiais, calcula a assinatura inicial e inclui o item na grade.</span>
+  </li>
+</ol>
+
+<div class="nota"><span class="rot">Validação Rígida</span>O Compras.gov rejeita consultas com UASG inválida. Se o boletim do Conlicitação
+trouxe o número do processo administrativo no lugar da UASG, localize o código numérico correto do órgão antes de cadastrar.</div>
+
+<h2>4. Leitura do Feed de Atos Oficiais e Mensagens</h2>
+<p>Ao selecionar um pregão na lista lateral, o painel central exibe seus detalhes cadastrais (órgão, modalidade, valor estimado e data de abertura)
+seguidos pelo <b>Histórico de Atos Oficiais &amp; Avisos</b>:</p>
+<ul>
+  <li><b>Mensagens do Pregoeiro:</b> destacadas com autor e horário exato. Registram esclarecimentos, avisos de prorrogação e convocações para envio de anexos.</li>
+  <li><b>Eventos do PNCP / Sistema:</b> registro automático de publicações de retificação de edital, suspensões <i>sine die</i> e decisões de recursos.</li>
+  <li><b>Etiqueta NOVO:</b> marca visual vermelha nos eventos ocorridos desde a última leitura humana.</li>
+  <li><b>Botão Marcar Lido:</b> limpa as marcações de pendência e atualiza a data de visualização do registro.</li>
+</ul>
+
+<h2>5. Alertas Automatizados por E-mail</h2>
+<p>Sempre que a varredura periódica detecta uma mensagem nova ou alteração de situação cadastral, o sistema despacha um e-mail estruturado
+para os responsáveis selecionados:</p>
+<ul>
+  <li><b>Assunto Padronizado:</b> inicia com a tag <span class="cod">[B2G-RADAR-ENTERPRISECORE]</span>, facilitando a criação de regras e filtros de caixa de entrada no Outlook.</li>
+  <li><b>Corpo do Comunicado:</b> layout corporativo contendo o aviso em destaque, tabela com órgão, pregão, portal, valor e link direto para a sessão pública.</li>
+  <li><b>Despacho Manual:</b> o botão <b>Disparar E-mail</b> permite reenviar a notificação sob demanda para os responsáveis a qualquer instante.</li>
+</ul>
+
+<h2>6. Resolução de Dúvidas Operacionais</h2>
+<table>
+  <tr><th>Dúvida / Problema</th><th>Causa</th><th>Procedimento</th></tr>
+  <tr>
+    <td>O pregão não foi encontrado no Compras.gov</td>
+    <td>Número ou UASG digitados incorretamente, ou certame publicado fora do ano informado.</td>
+    <td>Confira o edital. Certifique-se de preencher apenas algarismos no campo UASG (sem letras ou barras).</td>
+  </tr>
+  <tr>
+    <td>Licitações-e mostra acompanhamento manual</td>
+    <td>O Banco do Brasil protege o portal Licitações-e com validações de sessão e Cloudflare, sem API pública oficial.</td>
+    <td>O Radar preserva o número, link direto e histórico manual, permitindo acesso rápido com um clique.</td>
+  </tr>
+  <tr>
+    <td>Alerta por e-mail não chegou</td>
+    <td>O endereço do responsável não foi marcado ou o Outlook clássico não está autenticado na máquina.</td>
+    <td>Clique em <b>Editar Responsáveis</b> no card do pregão e certifique-se de que o e-mail está presente na lista.</td>
+  </tr>
+</table>
+
+<div class="rod">
+  ENTERPRISECORE Radar &bull; Enterprise IT Group &bull; Uso interno restrito &bull; Versão 1.0
+</div>
+
+</body></html>

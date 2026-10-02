@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Manual de Construção — Painel de ROs</title>
+<style>
+  @page { size: A4; margin: 16mm 18mm; }
+  * { box-sizing: border-box; }
+  :root{
+    --ink:#1C1A17; --ink-soft:#5B564C; --accent:#22506E; --accent-2:#835507;
+    --paper:#FFFFFF; --wash:#F6F1E4; --line:#D6CDB8;
+  }
+  body{ font-family:"Segoe UI", Calibri, Arial, sans-serif; color:var(--ink); font-size:10.1pt; line-height:1.34; margin:0; background:var(--paper); }
+  .eyebrow{ font:700 8pt/1 "Segoe UI",sans-serif; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-2); margin:0 0 6px; }
+  h1{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:21pt; color:var(--accent); margin:0 0 5px; line-height:1.15; letter-spacing:-.01em; }
+  .sub{ font:400 10pt/1.4 "Segoe UI",sans-serif; color:var(--ink-soft); margin:0 0 13px; padding-bottom:9px; border-bottom:1px solid var(--line); }
+  h2{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:13.8pt; color:var(--accent); margin:18px 0 7px; padding-bottom:4px; border-bottom:1px solid var(--line); }
+  h3{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:11.3pt; color:#2B2B2B; margin:14px 0 5px; }
+  p{ margin:0 0 7px; text-align:justify; }
+  ul,ol{ margin:0 0 8px; padding-left:18px; }
+  li{ margin-bottom:2px; }
+  table{ width:100%; border-collapse:collapse; margin:7px 0 10px; font-size:9pt; }
+  th,td{ border:1px solid var(--line); padding:3px 6px; text-align:left; vertical-align:top; }
+  th{ background:var(--wash); font-weight:700; color:var(--accent); font-size:8pt; letter-spacing:.03em; text-transform:uppercase; }
+  .cod{ font-family:Consolas,monospace; background:var(--wash); padding:1px 5px; border-radius:2px; font-size:9pt; border:1px solid var(--line); }
+  .prompt{ background:#211E19; color:#F3EFE4; font-family:Consolas,monospace; font-size:8.1pt; white-space:pre-wrap; padding:10px 12px; border-radius:2px; margin:6px 0 9px; line-height:1.35; border-left:3px solid var(--accent-2); }
+  .prompt .rot{ display:block; font:700 7.3pt/1 "Segoe UI",sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#C9A15C; margin-bottom:7px; }
+  .nota{ border-left:3px solid var(--accent); background:var(--wash); padding:7px 12px; margin:6px 0 9px; }
+  .nota .rot{ display:block; font:700 7.5pt/1 "Segoe UI",sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:3px; }
+  .nota.alerta{ border-left-color:var(--accent-2); }
+  .nota.alerta .rot{ color:var(--accent-2); }
+  .quebra{ page-break-before:always; }
+  .rod{ margin-top:5px; padding-top:4px; border-top:1px solid var(--line); font-size:8.3pt; color:var(--ink-soft); }
+</style></head><body>
+
+<p class="eyebrow">ENTERPRISECORE Radar · Documentação Técnica</p>
+<h1>Manual de Construção — Painel de ROs</h1>
+<p class="sub">Como o pipeline de acompanhamento de ROs (Registros de Oportunidade) e a integração com o Radar
+foram construídos</p>
+
+<h2>0. Uma distinção importante antes de começar</h2>
+<p>O "Painel de ROs" que aparece dentro do ENTERPRISECORE Radar é composto de <b>duas coisas separadas</b>, construídas em
+momentos e por processos diferentes:</p>
+<table>
+<tr><th>Peça</th><th>O que é</th><th>Onde vive</th></tr>
+<tr><td><b>Gestão de ROs</b></td><td>Um aplicativo Streamlit (Python) completo e independente, com pipeline de
+dados, alertas por e-mail e um painel de monitoramento. Já existia antes de ser embutido no Radar.</td>
+<td>Pasta própria <span class="cod">Gestao_ROs_Bitrix</span>, fora do projeto do Radar.</td></tr>
+<tr><td><b>O encaixe no Radar</b></td><td>Um mecanismo pequeno, dentro do próprio Radar, que sobe o Streamlit acima
+como um processo em segundo plano e o exibe dentro de uma moldura (<span class="cod">iframe</span>), para não
+precisar de uma janela separada.</td><td>Dentro do projeto do Radar, em <span class="cod">app/server.js</span>.</td></tr>
+</table>
+<p>Este manual cobre as duas coisas: primeiro como o aplicativo Gestão de ROs foi montado (para quem for adaptar
+ou recriar o pipeline), depois como o Radar o embute (para quem for integrar outro painel do mesmo jeito).</p>
+
+<h2>Parte A — O aplicativo Gestão de ROs</h2>
+
+<h3>O que ele resolve</h3>
+<p>Uma <b>Oportunidade de Renovação (RO)</b> tem uma data de vencimento. A empresa precisa saber, com antecedência,
+quais estão perto de vencer, avisar o vendedor (AM) responsável, e depois consolidar as decisões de todos num
+relatório único. O CRM (Bitrix) tem os dados brutos, mas não organiza isso por vendedor nem dispara aviso sozinho —
+é isso que este pipeline faz por cima do export do CRM.</p>
+
+<h3>Fase 1 — A fonte de dados</h3>
+<p>Tudo começa com um arquivo exportado manualmente do Bitrix CRM (formato <span class="cod">report (XX).xls</span>),
+colocado numa pasta de entrada. Cada linha do export é um negócio, com colunas de até três ROs por negócio
+(1º RO, 2º RO, 3º RO), cada bloco com sua própria data de vencimento.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Preciso de um script Python que leia um arquivo .xls exportado de um CRM (formato Bitrix),
+onde cada linha e um "negocio" e ha ate 3 blocos de colunas repetidos lado a lado (1o RO, 2o RO,
+3o RO), cada bloco com: aprovado (sim/nao), identificador do RO, data de vencimento.
+
+O script deve:
+1. Ler o .xls mais recente de uma pasta configuravel via variavel de ambiente.
+2. Para cada negocio, calcular para cada bloco de RO preenchido: se esta vencido (data de
+   vencimento no passado) e quantos dias faltam ou passaram.
+3. Separar os negocios por VENDEDOR RESPONSAVEL (uma coluna do export) e gravar uma planilha
+   .xlsx por vendedor, cada uma com duas abas: "Dados" (tudo) e "Vencimento" (so os negocios
+   com pelo menos um RO vencendo nos proximos 30 dias, e que o vendedor ainda nao tenha
+   decidido "Nao renovar").
+4. IMPORTANTE: se a planilha do vendedor ja existir de uma execucao anterior e tiver uma
+   coluna "Decisao" preenchida a mao, o script deve preservar essas decisoes ao atualizar
+   (merge pelo identificador do negocio), nunca sobrescrever o que a pessoa ja preencheu.</div>
+<div class="nota"><span class="rot">Verificação</span>Rode com um export de teste (pode ser uma planilha fake com 2-3 linhas). Confira que saiu uma
+planilha por vendedor, com a aba "Vencimento" só trazendo quem realmente está no prazo de risco.</div>
+
+<h3>Fase 2 — Alertas automáticos por e-mail</h3>
+<p>Depois que as planilhas por vendedor existem, um segundo script varre cada uma e dispara um e-mail para quem
+tem RO vencendo.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Crie um segundo script Python que:
+1. Le a aba "Dados" de cada planilha de vendedor gerada na fase anterior.
+2. Para cada negocio com algum RO vencido ou vencendo nos proximos 30 dias (e sem decisao
+   "Nao renovar" ja marcada), monta um e-mail em HTML listando os ROs em risco.
+3. Envia usando OUTLOOK COM local (nao SMTP direto) - assim usa a conta ja logada na
+   maquina, sem guardar senha em lugar nenhum.
+4. Tenha uma variavel de ambiente tipo ALERTAS_APENAS_EXIBIR: se ligada, o e-mail so ABRE
+   na tela para conferencia manual antes de enviar, nunca envia sozinho automaticamente.
+
+O mapeamento de qual vendedor recebe em qual e-mail deve vir de um arquivo de configuracao
+(.env ou json), nunca escrito fixo no codigo.</div>
+<div class="nota"><span class="rot">Verificação</span>Ligue primeiro o modo "apenas exibir" e confirme que o e-mail mostrado está correto antes de
+qualquer teste de envio de verdade.</div>
+
+<h3>Fase 3 — Consolidar tudo num relatório único</h3>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Crie um terceiro script que junta as planilhas de TODOS os vendedores (com as decisoes ja
+preenchidas por eles) num unico arquivo consolidado .xlsx, formatado para leitura gerencial:
+cabecalho colorido, tabela nomeada (Excel Table, nao so celulas soltas), largura de coluna
+ajustada ao conteudo. Use a biblioteca openpyxl para ler e escrever formatacao (Font,
+PatternFill, Border, Table).</div>
+<div class="nota"><span class="rot">Verificação</span>Abra o consolidado final e confirme que todo vendedor que tinha planilha individual aparece
+nele, com as decisões preservadas.</div>
+
+<h3>O painel Streamlit (a interface)</h3>
+<p>Por cima dos três scripts, um app Streamlit dá uma tela única com <b>quatro seções</b>, trocadas por um menu de
+rádio na barra lateral — não por abas separadas.</p>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Crie um app.py em Streamlit com navegacao por st.sidebar.radio (nao st.tabs) entre 4 telas:
+
+1. "Painel de Monitoramento (ROs)": le o consolidado mais recente e mostra cada negocio como
+   um CARTAO HTML sanitizado (nao uma tabela crua) - com o nome do negocio, vendedor,
+   fabricante, quantos dias faltam para o vencimento e a decisao do AM em destaque. Use o
+   MESMO SISTEMA VISUAL do painel de Boletins (mesmas cores, mesmo estilo de card), para as
+   duas telas parecerem parte do mesmo produto. Ofereca tambem um modo de tabela (st.dataframe)
+   como alternativa para quem prefere ver tudo compacto, e um botao de download da visualizacao
+   atual em Excel. Tenha um filtro de "janela de vigilancia" na barra lateral:
+   radio para escolher entre "so vencidos", "so futuros" (com slider de quantos dias a
+   frente) ou "vencidos + futuros". Pagine a tabela (25/50/100/todos por pagina).
+2. "Configuracoes de Fabricantes": uma tela que le e escreve um config_fabricantes.json com
+   regra por fabricante (ex: renovacao automatica sim/nao, quantos dias de prazo de extensao) -
+   pessoa de negocio edita sem tocar em codigo.
+3. "Executar Scripts": le um scripts.json listando os scripts do pipeline (titulo, descricao,
+   caminho do arquivo, pasta de execucao, arquivo .env a usar) - mostra um seletor, um botao
+   "Ver codigo fonte" (st.code) e um botao "Rodar", que executa via subprocess.run com
+   captura de saida e mostra o resultado na tela.
+4. "Manual de Uso": renderiza um arquivo Markdown de ajuda direto na tela (assim o manual
+   nunca fica desatualizado em relacao ao app - e o mesmo arquivo usado dentro e fora).
+
+Carregue os dados do consolidado com cache do Streamlit (st.cache_data) para nao reler o
+Excel a cada interacao - e tenha um botao "Recarregar" que limpa esse cache manualmente.</div>
+<div class="nota"><span class="rot">Verificação</span>Rode <span class="cod">streamlit run app.py</span> e navegue pelas quatro seções. O filtro de
+janela de vigilância muda a lista? O botão Recarregar realmente relê o arquivo do disco (edite algo nele por fora e
+confirme)?</div>
+<div class="nota alerta"><span class="rot">Atenção</span>Variáveis de ambiente (caminhos de pasta, e-mails, mapeamento de vendedor) devem viver <b>só</b> no
+arquivo <span class="cod">.env</span>, que precisa estar no <span class="cod">.gitignore</span> se este projeto for
+versionado, porque ele carrega nome de pessoa e link de compartilhamento pessoal — informação que não deve ir para
+nenhum repositório nem para qualquer documento distribuído.</div>
+
+<h2>Parte B — Como o Radar embute este painel</h2>
+<p>Esta parte descreve exatamente o que existe hoje dentro do ENTERPRISECORE Radar. Não é uma proposta teórica.</p>
+<h3>Passo único — Subir o Streamlit como processo filho e mostrar num iframe</h3>
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>No server.js do meu app Node, quero embutir um painel Streamlit ja existente, que mora numa
+pasta separada com seu proprio app.py. Adicione:
+
+1. Uma funcao que resolve o caminho do Python de verdade (nao o atalho de 0 byte que a
+   Microsoft Store deixa no PATH - descarte qualquer python.exe dentro de uma pasta
+   "WindowsApps" ou com tamanho de arquivo zero).
+2. Uma funcao "painelNoAr()" que tenta uma requisicao HTTP rapida (timeout curto, tipo 1.5s)
+   para http://localhost:8501/ e devolve se respondeu ou nao - serve tanto para nao subir
+   um processo duplicado quanto para detectar se alguem ja abriu o painel por fora (por um
+   atalho .bat, por exemplo).
+3. Rota POST /api/painel-subir: se painelNoAr() ja for verdadeiro, so devolve sucesso sem
+   fazer nada. Senao, usa child_process.spawn para rodar
+   python -m streamlit run app.py --server.port 8501 --server.headless true
+   --browser.gatherUsageStats false
+   com cwd apontando pra pasta do painel, guarda a saida (stdout/stderr) numa variavel para
+   debug, e fica tentando painelNoAr() a cada meio segundo por ate 20 segundos antes de
+   desistir e devolver erro com o log capturado.
+4. Rota POST /api/painel-parar: mata o processo guardado, se existir.
+5. Rota GET /api/painel-status: devolve se esta no ar agora.
+6. No HTML, um iframe apontando para http://localhost:8501 que so aparece depois que o
+   "subir" confirmar sucesso, com um botao separado "abrir em nova aba" (alguns recursos
+   do Streamlit nao funcionam bem dentro de iframe, entao a pessoa pode preferir a aba
+   separada).</div>
+<div class="nota"><span class="rot">Verificação</span>Feche todo Streamlit rodando, clique "Abrir painel" no Radar e confirme que sobe sozinho.
+Depois, abra o mesmo painel MANUALMENTE por fora (fora do Radar) e clique "Abrir painel" de novo. O Radar deve
+reconhecer que já está no ar e não tentar subir um segundo processo.</div>
+
+<h2>Configuração de ambiente</h2>
+<p>Nem a pasta do painel nem o caminho do Python devem ficar fixos no código — resolvidos automaticamente ou lidos
+de <span class="cod">config/ambiente.json</span>, para o mesmo Radar funcionar em outra máquina sem editar
+código-fonte.</p>
+
+<p class="rod">ENTERPRISECORE Radar — Manual de Construção, Painel de ROs. A Parte A descreve o aplicativo Gestão de ROs tal
+como existe hoje; a Parte B descreve exatamente o mecanismo de encaixe implementado no Radar.</p>
+</body></html>

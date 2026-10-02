@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Manual de Construção — Radar de Pregões 24/7</title>
+<style>
+  @page { size: A4; margin: 16mm 18mm; }
+  * { box-sizing: border-box; }
+  :root{
+    --ink:#1C1A17; --ink-soft:#5B564C; --accent:#22506E; --accent-2:#835507;
+    --paper:#FFFFFF; --wash:#F6F1E4; --line:#D6CDB8;
+  }
+  body{ font-family:"Segoe UI", Calibri, Arial, sans-serif; color:var(--ink); font-size:10.1pt; line-height:1.36; margin:0; background:var(--paper); }
+  .eyebrow{ font:700 8pt/1 "Segoe UI",sans-serif; letter-spacing:.14em; text-transform:uppercase; color:var(--accent-2); margin:0 0 6px; }
+  h1{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:21pt; color:var(--accent); margin:0 0 5px; line-height:1.15; letter-spacing:-.01em; }
+  .sub{ font:400 10pt/1.4 "Segoe UI",sans-serif; color:var(--ink-soft); margin:0 0 13px; padding-bottom:9px; border-bottom:1px solid var(--line); }
+  h2{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:13.8pt; color:var(--accent); margin:18px 0 7px; padding-bottom:4px; border-bottom:1px solid var(--line); }
+  h3{ font-family:Constantia,Cambria,Georgia,serif; font-weight:700; font-size:11.2pt; color:#2B2B2B; margin:13px 0 5px; }
+  p{ margin:0 0 7px; text-align:justify; }
+  ul,ol{ margin:0 0 8px; padding-left:18px; }
+  li{ margin-bottom:2px; }
+  table{ width:100%; border-collapse:collapse; margin:7px 0 10px; font-size:9pt; }
+  th,td{ border:1px solid var(--line); padding:3px 6px; text-align:left; vertical-align:top; }
+  th{ background:var(--wash); font-weight:700; color:var(--accent); font-size:8pt; letter-spacing:.03em; text-transform:uppercase; }
+  .cod{ font-family:Consolas,monospace; background:var(--wash); padding:1px 5px; border-radius:2px; font-size:9pt; border:1px solid var(--line); }
+  .prompt{ background:#211E19; color:#F3EFE4; font-family:Consolas,monospace; font-size:8.1pt; white-space:pre-wrap; padding:10px 12px; border-radius:2px; margin:6px 0 9px; line-height:1.35; border-left:3px solid var(--accent-2); }
+  .prompt .rot{ display:block; font:700 7.3pt/1 "Segoe UI",sans-serif; letter-spacing:.12em; text-transform:uppercase; color:#C9A15C; margin-bottom:7px; }
+  .nota{ border-left:3px solid var(--accent); background:var(--wash); padding:7px 12px; margin:6px 0 9px; }
+  .nota .rot{ display:block; font:700 7.5pt/1 "Segoe UI",sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:3px; }
+  .nota.alerta{ border-left-color:var(--accent-2); }
+  .nota.alerta .rot{ color:var(--accent-2); }
+  .quebra{ page-break-before:always; }
+  .rod{ margin-top:5px; padding-top:4px; border-top:1px solid var(--line); font-size:8.3pt; color:var(--ink-soft); }
+  .roteiro{ margin:8px 0 12px; padding:10px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .roteiro .rot{ display:block; font:700 7.5pt/1 "Segoe UI",sans-serif; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-2); margin-bottom:5px; }
+  .roteiro ol{ columns:2; column-gap:22px; margin:0; padding-left:16px; }
+  .roteiro li{ break-inside:avoid; font-size:9.3pt; }
+</style></head><body>
+
+<p class="eyebrow">ENTERPRISECORE Radar · Documentação Técnica</p>
+<h1>Manual de Construção — Radar de Pregões 24/7</h1>
+<p class="sub">Engenharia de software, integração com APIs governamentais, motor de polling assíncrono e guia de reconstrução passo a passo</p>
+
+<h2>0. Visão Geral da Arquitetura</h2>
+<p>O <b>Radar de Pregões 24/7</b> foi projetado para operar como um sentinela ininterrupto. Ele resolve um problema crítico
+da equipe de licitações: prazos relâmpago de envio de anexos, convocações em sala de disputa e publicações de recursos
+que exigem manifestação técnica em poucas horas.</p>
+<p>O sistema foi implementado em <b>Node.js puro</b> (sem dependências externas de pacotes npm) e <b>PowerShell COM</b>
+para integração com o Outlook desktop. A ausência de bibliotecas externas pesadas garante portabilidade instantânea em qualquer
+ambiente Windows corporativo.</p>
+
+<table>
+  <tr><th>Módulo / Arquivo</th><th>Tecnologia</th><th>Papel no Sistema</th></tr>
+  <tr>
+    <td><span class="cod">app/compras-api.js</span></td>
+    <td>Node.js (<span class="cod">https</span> nativo)</td>
+    <td>Conector de APIs REST públicas para Compras.gov.br (PNCP) e Portal de Compras Públicas. Normaliza UASGs, busca certames e extrai frases do chat do pregoeiro.</td>
+  </tr>
+  <tr>
+    <td><span class="cod">app/server.js</span> (loop 24/7)</td>
+    <td>Node.js assíncrono</td>
+    <td>Executa varreduras periódicas a cada 1 minuto (<span class="cod">INTERVALO_MIN</span>), compara a assinatura de estado de cada certame e orquestra notificações.</td>
+  </tr>
+  <tr>
+    <td><span class="cod">data/acompanhados.json</span></td>
+    <td>JSON em disco</td>
+    <td>Banco de dados transacional leve com a lista de pregões cadastrados, histórico de eventos de cada um e lista de responsáveis por e-mail.</td>
+  </tr>
+  <tr>
+    <td><span class="cod">scripts/enviar-alerta-auto.ps1</span></td>
+    <td>PowerShell + Outlook COM</td>
+    <td>Instancia o processo do Outlook clássico de forma oculta e despacha e-mails com cabeçalho corporativo e tag <span class="cod">[B2G-RADAR-ENTERPRISECORE]</span>.</td>
+  </tr>
+  <tr>
+    <td><span class="cod">app/ui.html</span> (Aba Vigilância)</td>
+    <td>HTML5 / CSS3 / Vanilla JS</td>
+    <td>Painel responsivo com KPIs, feed em tempo real de mensagens de chat, modal de responsáveis e formulário multiportal.</td>
+  </tr>
+</table>
+
+<div class="roteiro"><span class="rot">Roteiro das fases de reconstrução</span>
+<ol>
+  <li>O conector de APIs públicas (<span class="cod">compras-api.js</span>)</li>
+  <li>O modelo de dados e assinatura de integridade</li>
+  <li>O motor de polling contínuo sem bloqueio de I/O</li>
+  <li>O mecanismo de despacho de e-mails via Outlook COM</li>
+  <li>As rotas de controle no servidor Node.js</li>
+  <li>A interface visual, KPIs e feed de atos oficiais</li>
+</ol>
+</div>
+
+<h2>Fase 1 — O Conector de APIs Públicas</h2>
+<p><b>Objetivo:</b> criar o módulo que consome dados das APIs do governo federal e municipais sem autenticação e sem bibliotecas externas.</p>
+
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Crie o modulo app/compras-api.js em Node.js puro (usando apenas o modulo nativo "https").
+O arquivo deve conter funcoes para:
+
+1. normalizaUasg(uasg): limpa espacos e pontuacao, garantindo que seja string numerica de ate 6 digitos.
+2. normalizaNumero(numero): extrai numeros e trata formatos de pregao como "PE 12/2026" ou "12".
+3. consultarPregao({uasg, numero, ano}): faz GET na API do Compras.gov/PNCP:
+   https://dadosabertos.compras.gov.br/modulo-pesquisa-pregao/1_consultarPregao_PNCP_14133?pagina=1&tamanhoPagina=10&numeroUasg={uasg}&anoCompra={ano}&numeroCompra={numero}
+   Caso nao encontre na Lei 14.133, tenta fallback na API legado da Lei 8.666.
+4. consultarChatPregao(codigoLicitacao): extrai as mensagens e avisos do pregoeiro.
+5. consultarPCP(item) e consultarChatPCP(codigo): consulta certames no Portal de Compras Publicas
+   (api.portaldecompraspublicas.com.br).
+
+Trate erros com timeout de 8 segundos para evitar travamento. Exporte todas as funcoes.</div>
+
+<div class="nota"><span class="rot">Verificação</span>Execute uma consulta de teste via linha de comando para uma UASG conhecida (ex.: <span class="cod">70001</span>).
+O retorno deve trazer um objeto JSON estruturado contendo órgão, objeto, valor estimado e situação cadastral.</div>
+
+<h2>Fase 2 — Modelo de Dados e Assinatura de Estado</h2>
+<p><b>Objetivo:</b> persistir o estado dos pregões e calcular um hash de assinatura para saber exatamente quando houve mudança real.</p>
+
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Adicione em compras-api.js a funcao assinatura(registro):
+Gere uma string hash compacta combinando:
+- situacao cadastral (ex.: Publicada, Em Disputa, Suspensa)
+- data e hora de abertura ou encerramento
+- quantidade de itens homologados
+- quantidade e texto da ultima frase do chat
+
+Isso serve para detectar mudancas reais no pregão sem depender de comparacoes campo a campo demoradas.
+Defina a estrutura de data/acompanhados.json:
+Array de objetos contendo:
+{
+  "id": "70001-12-2026",
+  "portal": "comprasgov",
+  "uasg": "70001", "numero": "12", "ano": "2026",
+  "apelido": "Nome do Órgão",
+  "responsaveis": ["email1@grupoenterprisecore.com"],
+  "dataCadastro": "ISO...", "ultimaChecagem": "ISO...",
+  "assinatura": "hash...",
+  "mudouAgora": false,
+  "registro": { ...dados brutos },
+  "eventos": [ { "quando": "ISO...", "texto": "...", "novo": true, "alertaEnviado": false } ]
+}</div>
+
+<div class="nota"><span class="rot">Verificação</span>Ao consultar o mesmo pregão duas vezes seguidas sem que haja novos atos oficiais,
+o hash da assinatura deve ser rigorosamente idêntico.</div>
+
+<h2>Fase 3 — O Motor de Polling Contínuo</h2>
+<p><b>Objetivo:</b> implementar a rotina de varredura periódica em segundo plano no servidor web sem bloquear o atendimento de requisições HTTP.</p>
+
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>No app/server.js, implemente o loop assincrono de vigilancia:
+1. Uma variavel global VARREDURA controlando status (rodando, ultima, comMudanca, verificados, ultimoErro).
+2. Funcao assincrona varrerVigilancia(motivo):
+   - Le data/acompanhados.json. Se estiver vazio, retorna imediatamente.
+   - Itera pelos itens com pausa de 400ms entre requisicoes para nao sobrecarregar as APIs governamentais.
+   - Chama comprasApi para atualizar cada item.
+   - Se a nova assinatura for diferente da anterior:
+     * Identifica quais eventos sao novos (mudanca de status ou mensagens de chat inéditas).
+     * Marca mudouAgora = true no item e novo = true no evento.
+     * Chama dispararAlertaEmail(item, mudancas).
+   - Salva data/acompanhados.json e data/historico-eventos.json.
+3. No arranque do servidor, execute uma varredura inicial apos 3 segundos, e programe um setInterval
+   a cada 1 minuto (INTERVALO_MIN * 60 * 1000) com t.unref() para nao segurar o processo.</div>
+
+<div class="nota alerta"><span class="rot">Atenção</span>O uso de <span class="cod">t.unref()</span> no timer e pausas com <span class="cod">setTimeout</span>
+entre requisições é obrigatório. Sem isso, se a rede oscilar ou a API do governo demorar para responder, o Node.js pode travar
+todas as outras abas do aplicativo.</div>
+
+<h2>Fase 4 — Despacho de E-mails via Outlook COM</h2>
+<p><b>Objetivo:</b> enviar mensagens de notificação corporativa formatadas em HTML através do Outlook do usuário.</p>
+
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>Crie o script scripts/enviar-alerta-auto.ps1:
+- Parametro de entrada: -JsonPath com o caminho de um arquivo temporario contendo { to, subject, html }.
+- Instancia o Outlook COM: New-Object -ComObject Outlook.Application.
+- Cria mensagem $mail = $outlook.CreateItem(0).
+- Preenche $mail.To, $mail.Subject, $mail.HTMLBody.
+- Executa $mail.Send().
+- No server.js, crie dispararAlertaEmail(item, mudancas):
+  * Monta template HTML com destaque visual vermelho/ambar, lista de mudancas, tabela de dados da licitacao e link direto.
+  * Grava JSON temporario e invoca enviar-alerta-auto.ps1 via spawn em background.
+  * Marca alertaEnviado = true nos eventos despachados para nunca duplicar envio.</div>
+
+<div class="nota"><span class="rot">Verificação</span>Cadastre seu próprio e-mail num pregão de teste e clique no botão de disparo de alerta manual.
+Uma notificação estruturada deve chegar na sua caixa de entrada em segundos com a tag <span class="cod">[B2G-RADAR-ENTERPRISECORE]</span>.</div>
+
+<h2>Fase 5 e 6 — Rotas da API e Interface de Usuário</h2>
+<p><b>Objetivo:</b> expor as operações via HTTP REST e montar o painel visual com KPI cards e feed de chat.</p>
+
+<div class="prompt"><span class="rot">Prompt para colar na IA</span>1. Adicione ao server.js as rotas:
+   - GET /api/acompanhados: retorna lista e status da varredura.
+   - POST /api/acompanhar: valida e cadastra novo pregão.
+   - POST /api/desacompanhar: remove do monitoramento.
+   - POST /api/checar-status: força varredura manual imediata.
+   - POST /api/vigilancia-marcar-lido: remove os alertas pendentes.
+   - POST /api/vigilancia-atualizar-responsaveis: altera e-mails vinculados.
+2. No app/ui.html, crie o container #modVigilancia:
+   - Grade superior de 4 KPIs (Pregões, Movimentação Não Lida, Valor Total, Status 24/7).
+   - Painel mestre-detalhe: coluna esquerda com a lista de cards de certames monitorados; coluna direita
+     com cabeçalho completo, botões de ação e linha do tempo de mensagens (estilo chat de mensageria).
+   - Formulario expansivel com abas para Compras.gov, Licitações-e e PCP.</div>
+
+<h2>Gotchas Técnicas e Soluções Adotadas</h2>
+<table>
+  <tr><th>Desafio Técnico</th><th>Causa Real</th><th>Solução Definitiva</th></tr>
+  <tr>
+    <td>Licitações-e (Banco do Brasil) sem dados automáticos</td>
+    <td>O portal é construído em JSF antigo com estado de sessão no servidor e protegido por Cloudflare invisível.</td>
+    <td>O sistema cadastra o pregão com link direto para consulta rápida em um clique e permite registro manual de eventos.</td>
+  </tr>
+  <tr>
+    <td>Frases do pregoeiro repetidas a cada ciclo</td>
+    <td>O chat do Compras.gov devolve o histórico completo a cada chamada, sem paginação de novas mensagens.</td>
+    <td>O sistema armazena a coleção de hashes de texto das frases já processadas em <span class="cod">historico-eventos.json</span>, descartando repetições.</td>
+  </tr>
+  <tr>
+    <td>Corrupção do arquivo JSON em desligamento</td>
+    <td>Quedas de energia ou encerramento forçado do Node durante o salvamento de <span class="cod">acompanhados.json</span>.</td>
+    <td>A gravação é feita via <span class="cod">writeFileSync</span> atômico após o ciclo completo de varredura.</td>
+  </tr>
+</table>
+
+<div class="rod">
+  ENTERPRISECORE Radar &bull; Enterprise IT Group &bull; Uso interno restrito &bull; Versão 1.0
+</div>
+
+</body></html>

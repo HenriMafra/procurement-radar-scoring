@@ -1,0 +1,67 @@
+# =====================================================================
+#  ENTERPRISECORE Radar - o que NAO sobe para o repositorio
+#
+#  Regra: codigo e configuracao de escopo sobem; dado real e informacao
+#  de pessoa, nao. O repo e privado, mas dado de cliente e de equipe nao
+#  precisa estar la de qualquer forma.
+# =====================================================================
+
+# --- dados reais das licitacoes ---------------------------------------
+# Boletins baixados do Conlicitacao (conteudo do fornecedor, nao e nosso)
+data/boletins/*.xlsx
+data/boletins/*.xls
+data/boletins/*.csv
+
+# Resultado do processamento e planilhas geradas
+data/dados.json
+data/*.xlsx
+data/Planilha-*.xlsx
+
+# Modelos de e-mail gerados (saida, nao codigo - e sao pesados)
+data/*.oft
+data/*.zip
+data/Modelo-*.html
+
+# Manual em Word: nao e usado pelo app (o PDF e, via rota /pdf)
+*.docx
+
+# --- informacao de pessoas --------------------------------------------
+# Historico de envios: tem e-mail de gente
+data/enviados-log.json
+# Vigilancia de pregoes (modulo desativado, mas os dados ficam)
+data/acompanhados.json
+data/historico-eventos.json
+# Lista de contatos da equipe. Sobe so o exemplo (contatos.exemplo.json).
+config/contatos.json
+config/contatos-alertas.json
+
+# --- credenciais -------------------------------------------------------
+# Nunca. Em hipotese nenhuma.
+*.env
+.env
+*.pem
+*.key
+credenciais*
+token*
+data/extension-auth.json
+*.log
+
+# --- lixo de edicao e execucao ----------------------------------------
+*.bak
+*.bak2
+*.tmp
+~$*
+node_modules/
+scratch/
+__pycache__/
+.DS_Store
+Thumbs.db
+
+# --- ambiente local ----------------------------------------------------
+# ambiente.json guarda caminhos da maquina de quem instalou.
+# O arquivo padrao (tudo em branco = auto-deteccao) SOBE; se voce preencher
+# com caminhos seus, descomente a linha abaixo para nao versionar.
+# config/ambiente.json
+
+# snapshot de comparacao de notas da skill calibrar-radar
+data/.snapshot-scores.json

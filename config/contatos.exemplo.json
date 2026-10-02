@@ -1,0 +1,8 @@
+{
+  "_instrucao": "MODELO. Copie este arquivo para 'contatos.json' na mesma pasta e troque pelos e-mails reais da sua equipe. O contatos.json NAO vai para o repositorio (esta no .gitignore), justamente para nao publicar e-mail de ninguem.",
+
+  "pessoas": [
+    { "nome": "Fulano de Tal",     "email": "fulano@suaempresa.com.br",  "papel": "Gerente Comercial" },
+    { "nome": "Ciclana de Souza",  "email": "ciclana@suaempresa.com.br", "papel": "Pré-vendas" }
+  ]
+}

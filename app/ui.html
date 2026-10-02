@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ENTERPRISECORE RADAR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    /* ===================================================================
+       ESTRITAMENTE 5 CORES: BRANCO, PRETO, CINZA, VERDE, VERMELHO
+       =================================================================== */
+    
+    /* 1. PRETO */
+    --c-black: #080a0e;
+    --c-black-pure: #000000;
+    --c-black-well: #05070a;
+
+    /* 2. BRANCO */
+    --c-white: #ffffff;
+    --c-white-soft: #f8fafc;
+
+    /* 3. CINZA (Aço Escovado, Superfícies Metálicas, Bordas, Textos Secundários) */
+    --c-gray-top: #262c37;
+    --c-gray-bot: #141820;
+    --c-gray-plate: linear-gradient(180deg, var(--c-gray-top) 0%, var(--c-gray-bot) 100%);
+    --c-gray-plate-hover: linear-gradient(180deg, #303746 0%, #1b202b 100%);
+    --c-gray-plate-active: linear-gradient(180deg, #3a4354 0%, #202735 100%);
+    
+    --c-gray-border: #2d3544;
+    --c-gray-bevel-top: #475569;
+    --c-gray-bevel-bot: #0a0d12;
+    --c-gray-muted: #94a3b8;
+    --c-gray-light: #cbd5e1;
+    --c-gray-dark: #64748b;
+
+    /* 4. VERDE (Positivo, Parceiros, Ativo, Sucesso) */
+    --c-green: #10b981;
+    --c-green-bg: #064e3b;
+    --c-green-border: #059669;
+    --c-green-txt: #6ee7b7;
+    --c-green-btn: linear-gradient(180deg, #15803d 0%, #166534 100%);
+
+    /* 5. VERMELHO (Alerta, Novidade, Vencido, Erro, Remoção) */
+    --c-red: #ef4444;
+    --c-red-bg: #7f1d1d;
+    --c-red-border: #b91c1c;
+    --c-red-txt: #fca5a5;
+    --c-red-btn: linear-gradient(180deg, #991b1b 0%, #7f1d1d 100%);
+
+    /* Relevo e Sombras de Painel Metálico */
+    --shadow-plate: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.6), 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.7);
+    --radius: 6px;
+    --radius-sm: 4px;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--c-black);
+    background-image: 
+      radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.04) 0%, transparent 60%),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.01) 0px, rgba(255, 255, 255, 0.01) 1px, transparent 1px, transparent 3px),
+      linear-gradient(180deg, #161b24 0%, var(--c-black) 100%);
+    background-attachment: fixed;
+    color: var(--c-white-soft);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.55;
+    letter-spacing: -0.01em;
+    padding-bottom: 110px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--c-white); text-decoration: underline; text-underline-offset: 3px; }
+  a:hover { color: var(--c-gray-light); }
+
+  /* ---------- HEADER PRINCIPAL (PAINEL DE METAL) ---------- */
+  header {
+    background: linear-gradient(180deg, #222834 0%, #131720 100%);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 14px rgba(0,0,0,0.6);
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .brand-area { display: flex; align-items: center; gap: 14px; }
+  .brand-area img {
+    height: 38px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    background: #ffffff;
+    padding: 2px 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+  }
+  .htit {
+    font-size: 19px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: var(--c-white);
+    text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  }
+
+  /* Navegação por Abas */
+  .mod-nav {
+    display: flex;
+    gap: 8px;
+    background: #0d1016;
+    padding: 7px 28px;
+    border-bottom: 1px solid #1f2530;
+    box-shadow: var(--shadow-inset);
+    position: sticky;
+    top: 63px;
+    z-index: 45;
+  }
+  .mod-btn {
+    background: var(--c-gray-plate);
+    color: var(--c-gray-muted);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    padding: 8px 18px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--shadow-plate);
+    transition: all 0.15s ease;
+  }
+  .mod-btn:hover {
+    background: var(--c-gray-plate-hover);
+    color: var(--c-white);
+  }
+  .mod-btn.active {
+    background: var(--c-gray-plate-active);
+    color: var(--c-white);
+    border-color: #64748b;
+    border-top-color: var(--c-white);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+
+  .top-status-badge {
+    font-size: 12px;
+    color: var(--c-gray-muted);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--c-black-well);
+    padding: 5px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #202633;
+    box-shadow: var(--shadow-inset);
+  }
+  .dot-live {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--c-green);
+    box-shadow: 0 0 6px var(--c-green);
+  }
+
+  /* ---------- BOTÕES DE METAL & CONTROLES ---------- */
+  button {
+    font: inherit;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    background: var(--c-gray-plate);
+    color: var(--c-white-soft);
+    padding: 8px 14px;
+    font-weight: 600;
+    font-size: 12px;
+    box-shadow: var(--shadow-plate);
+    transition: all 0.15s ease;
+  }
+  button:hover:not(:disabled) {
+    background: var(--c-gray-plate-hover);
+    border-color: #4b5870;
+    color: var(--c-white);
+  }
+  button:active:not(:disabled) {
+    background: var(--c-gray-bot);
+    box-shadow: var(--shadow-inset);
+  }
+  button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .b-pri {
+    background: linear-gradient(180deg, #374151 0%, #1f2937 100%);
+    border-color: #4b5563;
+    border-top-color: #6b7280;
+    color: var(--c-white);
+  }
+  .b-pri:hover:not(:disabled) { background: linear-gradient(180deg, #4b5563 0%, #374151 100%); }
+  .b-ok {
+    background: var(--c-green-btn);
+    border-color: var(--c-green-border);
+    border-top-color: #34d399;
+    color: #f0fdf4;
+  }
+  .b-ok:hover:not(:disabled) { background: linear-gradient(180deg, #16a34a 0%, #15803d 100%); }
+  .b-bad {
+    background: var(--c-red-btn);
+    border-color: var(--c-red-border);
+    border-top-color: #f87171;
+    color: #fef2f2;
+  }
+  .b-gho {
+    background: var(--c-gray-plate);
+    border-color: var(--c-gray-border);
+    color: var(--c-gray-muted);
+  }
+  .b-sm { padding: 5px 11px; font-size: 11.5px; }
+
+  a.b-pri, a.b-ok, a.b-gho, a.b-sm {
+    display: inline-flex; align-items: center; gap: 6px;
+    font: inherit; font-size: 11.5px; font-weight: 600;
+    padding: 6px 12px; border-radius: var(--radius-sm);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    background: var(--c-gray-plate); color: var(--c-white-soft); text-decoration: none; cursor: pointer;
+    box-shadow: var(--shadow-plate);
+  }
+  a.b-pri { background: linear-gradient(180deg, #374151 0%, #1f2937 100%); border-color: #4b5563; border-top-color: #6b7280; color: #fff; }
+  a.b-ok  { background: var(--c-green-btn); border-color: var(--c-green-border); border-top-color: #34d399; color: #f0fdf4; }
+  a.b-gho { background: var(--c-gray-plate); border-color: var(--c-gray-border); color: var(--c-gray-muted); }
+  a.b-pri:hover { color: #fff; text-decoration: none; }
+  a.b-ok:hover  { color: #fff; text-decoration: none; }
+  a.b-gho:hover { color: #fff; text-decoration: none; }
+
+  /* ---------- CONTAINER PRINCIPAL & PLACAS ---------- */
+  .wrap { max-width: 1440px; margin: 0 auto; padding: 20px 28px; }
+
+  .panel {
+    background: var(--c-gray-plate);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    box-shadow: var(--shadow-plate);
+    margin-bottom: 16px;
+  }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .row + .row { margin-top: 12px; }
+
+  input[type=text], input[type=search], input[type=email], select, textarea {
+    font: inherit;
+    font-size: 12.5px;
+    padding: 8px 12px;
+    border: 1px solid #2a313d;
+    border-top: 1px solid #1a1e26;
+    border-bottom: 1px solid #3d4657;
+    border-radius: var(--radius-sm);
+    background: var(--c-black-well);
+    color: var(--c-white-soft);
+    outline: none;
+    box-shadow: var(--shadow-inset);
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: #64748b;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15), var(--shadow-inset);
+  }
+  .busca { flex: 1; min-width: 280px; }
+  label.chk { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; font-size: 12.5px; color: var(--c-gray-muted); }
+  input[type=checkbox] { accent-color: var(--c-white); width: 15px; height: 15px; }
+
+  /* Chips de Filtro */
+  .fchip {
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    background: var(--c-gray-plate);
+    border-radius: 4px;
+    padding: 5px 13px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--c-gray-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: var(--shadow-plate);
+    transition: all 0.15s ease;
+  }
+  .fchip:hover {
+    background: var(--c-gray-plate-hover);
+    color: var(--c-white);
+  }
+  .fchip.on {
+    color: var(--c-white);
+    border-color: #64748b;
+    border-top-color: var(--c-white);
+    background: var(--c-gray-plate-active);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 6px rgba(0,0,0,0.5);
+  }
+  .fchip .n { opacity: 0.85; font-weight: 700; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+
+  /* ---------- SELETOR DE ESTADOS (POPUP SUSPENSO) ---------- */
+  .ufbox { position: relative; display: inline-block; }
+  .ufbtn {
+    display: inline-flex; align-items: center; gap: 8px; min-width: 170px;
+    justify-content: space-between; text-align: left;
+  }
+  .ufbtn.ativo { border-color: #64748b; color: var(--c-white); font-weight: 700; }
+  .ufmenu {
+    display: none; position: absolute; top: calc(100% + 4px); left: 0; z-index: 60;
+    background: #11151c; border: 1px solid var(--c-gray-border); border-top: 1px solid var(--c-gray-bevel-top);
+    border-radius: var(--radius); box-shadow: 0 12px 28px rgba(0,0,0,0.8); padding: 12px; min-width: 290px;
+    max-height: 320px; overflow-y: auto;
+  }
+  .ufmenu.on { display: block; }
+  .ufacoes { display: flex; gap: 8px; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid #1f2530; }
+  .ufitem {
+    display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 4px;
+    cursor: pointer; font-size: 12px; user-select: none; color: var(--c-gray-muted);
+  }
+  .ufitem:hover { background: rgba(255, 255, 255, 0.06); color: var(--c-white); }
+  .ufitem input { cursor: pointer; accent-color: var(--c-white); }
+  .ufitem .n { margin-left: auto; color: var(--c-gray-dark); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+  /* ---------- KPI METRIC TILES ---------- */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 16px;
+  }
+  .kpi-card {
+    background: var(--c-gray-plate);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    box-shadow: var(--shadow-plate);
+  }
+  .kpi-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .kpi-card-title {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--c-gray-muted);
+  }
+  .kpi-card-count {
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: var(--c-white);
+    font-family: 'JetBrains Mono', monospace;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  }
+  .kpi-bar-track {
+    width: 100%;
+    height: 5px;
+    background: var(--c-black-well);
+    border-radius: 999px;
+    margin-top: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-inset);
+  }
+  .kpi-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: #64748b;
+  }
+
+  /* ---------- LISTA DE CARDS (RADAR DE BOLETINS) ---------- */
+  .lista { margin-top: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .card {
+    background: var(--c-gray-plate);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    border-left: 4px solid var(--c-gray-dark);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    position: relative;
+    box-shadow: var(--shadow-plate);
+    transition: all 0.15s ease;
+  }
+  .card:hover {
+    border-color: #4b5870;
+  }
+  .card.sel {
+    border-color: #94a3b8;
+    border-left-color: var(--c-white);
+    background: linear-gradient(180deg, #2b3342 0%, #181d26 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 0 0 1px #94a3b8, var(--shadow-plate);
+  }
+  .card.venc { opacity: 0.6; }
+
+  .chead { display: flex; gap: 16px; align-items: flex-start; }
+  .pos { font-size: 12px; font-weight: 800; color: var(--c-gray-dark); min-width: 32px; padding-top: 2px; font-family: 'JetBrains Mono', monospace; }
+  .cmain { flex: 1; min-width: 0; }
+  .orgao { font-size: 15.5px; font-weight: 800; line-height: 1.35; color: var(--c-white); text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+  .meta { font-size: 12px; color: var(--c-gray-muted); margin-top: 5px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .meta b { color: var(--c-gray-light); }
+
+  .scorebox {
+    text-align: center;
+    min-width: 92px;
+    background: var(--c-black-well);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #202632;
+    border-top: 1px solid #131720;
+    border-bottom: 1px solid #2f3848;
+    box-shadow: var(--shadow-inset);
+  }
+  .snum { font-size: 24px; font-weight: 900; line-height: 1; font-family: 'JetBrains Mono', monospace; }
+  .sfaixa { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+  .sbar { height: 3px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); margin-top: 6px; overflow: hidden; }
+  .sbar i { display: block; height: 100%; }
+  .stec { font-size: 10px; color: var(--c-gray-muted); margin-top: 4px; }
+
+  .objeto {
+    margin-top: 12px;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--c-gray-light);
+    background: var(--c-black-well);
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #202632;
+    box-shadow: var(--shadow-inset);
+  }
+  .objeto.trunc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .vermais {
+    background: none; border: 0; color: var(--c-white); font-size: 12px; font-weight: 600;
+    padding: 5px 0 0; cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+    box-shadow: none;
+  }
+
+  /* Detalhes de Nota e Evidências */
+  details.pq { margin-top: 10px; }
+  details.pq > summary {
+    cursor: pointer; font-size: 12px; font-weight: 700; color: var(--c-white);
+    list-style: none; display: inline-flex; align-items: center; gap: 5px;
+  }
+  details.pq > summary::-webkit-details-marker { display: none; }
+  details.pq > summary::before { content: "▸"; font-size: 10px; transition: transform .15s; }
+  details.pq[open] > summary::before { transform: rotate(90deg); }
+  .pqlist {
+    margin-top: 8px; border: 1px solid #202632; border-radius: 4px; overflow: hidden;
+    background: var(--c-black-well); box-shadow: var(--shadow-inset);
+  }
+  .pqrow { display: flex; gap: 10px; padding: 6px 12px; font-size: 12px; align-items: baseline; }
+  .pqrow + .pqrow { border-top: 1px solid #171b24; }
+  .pqpts { font-weight: 800; min-width: 42px; text-align: right; font-family: 'JetBrains Mono', monospace; }
+  .pqpts.pos { color: var(--c-green); }
+  .pqpts.neg { color: var(--c-red); }
+
+  /* Tags & Chips de Licitação (5 Cores) */
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .chip {
+    font-size: 11px; padding: 3px 9px; border-radius: 4px;
+    background: #181d26; color: var(--c-gray-light); border: 1px solid #2a3342;
+  }
+  .chip.p { background: var(--c-green-bg); border-color: var(--c-green-border); color: var(--c-green-txt); font-weight: 700; }
+  .chip.c { background: #262e3c; border-color: #475569; color: var(--c-white); font-weight: 700; }
+  .chip.s { background: #1f2633; border-color: #3b4657; color: var(--c-gray-light); font-weight: 600; }
+  .chip.v { background: var(--c-red-bg); border-color: var(--c-red-border); color: var(--c-red-txt); font-weight: 700; }
+
+  /* ---------- RADAR DE PREGÕES 24/7 (SPLIT VIEW) ---------- */
+  .vig-split {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-top: 14px;
+  }
+  @media (max-width: 1024px) {
+    .vig-split { grid-template-columns: 1fr; }
+  }
+  .vig-list-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .vig-card-item {
+    background: var(--c-gray-plate);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+    box-shadow: var(--shadow-plate);
+  }
+  .vig-card-item:hover {
+    background: var(--c-gray-plate-hover);
+    border-color: #4b5870;
+  }
+  .vig-card-item.sel {
+    border-color: #94a3b8;
+    background: linear-gradient(180deg, #2b3342 0%, #181d26 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 0 0 1px #94a3b8, var(--shadow-plate);
+  }
+  .vig-card-item.sel::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--c-white);
+    border-top-left-radius: var(--radius);
+    border-bottom-left-radius: var(--radius);
+  }
+  .vig-card-item.tem-novidade::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--c-red);
+    border-top-left-radius: var(--radius);
+    border-bottom-left-radius: var(--radius);
+  }
+  .vig-tag-portal {
+    font-size: 10.5px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--c-gray-muted);
+  }
+  .vig-dot-novo {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--c-red-txt);
+  }
+
+  .vig-detail-panel {
+    background: var(--c-gray-plate);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow-plate);
+  }
+  .vig-detail-head {
+    background: linear-gradient(180deg, #1b202a 0%, #11151c 100%);
+    border-bottom: 1px solid #1f2530;
+    padding: 16px 20px;
+  }
+  .vig-feed-box {
+    background: var(--c-black-well);
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 560px;
+    overflow-y: auto;
+    box-shadow: var(--shadow-inset);
+  }
+  .vig-msg-entry {
+    background: var(--c-gray-plate);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    font-size: 12.5px;
+    line-height: 1.55;
+    box-shadow: var(--shadow-plate);
+  }
+  .vig-msg-entry.novo {
+    border-left: 3px solid var(--c-red);
+    background: #181012;
+  }
+  .vig-msg-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 11px;
+  }
+  .vig-msg-autor {
+    font-weight: 800;
+    color: var(--c-white);
+    text-transform: uppercase;
+  }
+  .vig-msg-data {
+    color: var(--c-gray-dark);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .vig-msg-corpo {
+    color: var(--c-white-soft);
+    white-space: pre-wrap;
+  }
+  .vlab { font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--c-gray-muted); margin-bottom: 3px; }
+
+  /* ---------- BARRA FIXA INFERIOR DE AÇÕES ---------- */
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, #1b202a 0%, #0d1015 100%);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 -8px 24px rgba(0, 0, 0, 0.7);
+    padding: 12px 28px;
+    display: none;
+    z-index: 60;
+  }
+  .bar.on { display: block; }
+  .barin {
+    max-width: 1440px; margin: 0 auto;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .barin .cnt { font-weight: 900; color: var(--c-white); font-size: 13.5px; margin-right: 6px; font-family: 'JetBrains Mono', monospace; }
+
+  /* Modais / Dialogs */
+  dialog {
+    background: #141820;
+    color: var(--c-white-soft);
+    border: 1px solid var(--c-gray-border);
+    border-top: 1px solid var(--c-gray-bevel-top);
+    border-bottom: 1px solid var(--c-gray-bevel-bot);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.85);
+    padding: 0;
+  }
+  dialog::backdrop { background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px); }
+  .dlgh { padding: 14px 18px; font-weight: 800; font-size: 14px; border-bottom: 1px solid #1f2530; background: #0f131a; }
+  .dlgb { padding: 16px 18px; display: flex; flex-direction: column; gap: 12px; }
+  .dlgf { padding: 12px 18px; border-top: 1px solid #1f2530; display: flex; justify-content: flex-end; gap: 8px; background: #0f131a; }
+
+  /* Toast Notificação */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 100;
+    background: #1a202a; border: 1px solid #475569; border-top: 1px solid #94a3b8;
+    color: var(--c-white); padding: 10px 16px; border-radius: var(--radius-sm); font-size: 12.5px; font-weight: 700;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: none;
+  }
+  .toast.on { display: block; }
+</style>
+</head>
+<body>
+
+<!-- Header Principal: EnterpriseCore CyberSecurity + ENTERPRISECORE RADAR -->
+<header>
+  <div class="brand-area">
+    <img src="/enterprisecore_logo.jpg" alt="EnterpriseCore CyberSecurity">
+    <div class="htit">ENTERPRISECORE RADAR</div>
+  </div>
+
+  <div class="top-status-badge">
+    <span class="dot-live"></span>
+    <span id="fonte">Carregando dados…</span>
+  </div>
+</header>
+
+<!-- Navegação por Abas Principais -->
+<div class="mod-nav">
+  <button class="mod-btn active" id="btnModPub" data-mod="pub">
+    1. RADAR DE BOLETINS
+  </button>
+  <button class="mod-btn" id="btnModScr" data-mod="scr">
+    2. PAINEL DE ROs
+  </button>
+  <button class="mod-btn" id="btnModVig" data-mod="vig">
+    3. RADAR DE PREGÕES 24/7
+  </button>
+</div>
+
+<div class="wrap">
+  <!-- ===================================================================== -->
+  <!-- MÓDULO 1: RADAR DE BOLETINS (PROSPECÇÃO DIÁRIA)                       -->
+  <!-- ===================================================================== -->
+  <div id="modPublicacoes">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span class="kpi-card-title">Total no Boletim</span>
+          <span class="kpi-card-count" id="cntAllTop">0</span>
+        </div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span class="kpi-card-title">Parceiros Oficiais</span>
+          <span class="kpi-card-count" style="color:var(--c-green)" id="cntAltaTop">0</span>
+        </div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:75%;background:var(--c-green)"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span class="kpi-card-title">Concorrentes</span>
+          <span class="kpi-card-count" style="color:var(--c-white)" id="cntConcTop">0</span>
+        </div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:45%;background:#64748b"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span class="kpi-card-title">Status do Motor</span>
+          <span class="kpi-card-count" style="font-size:1.1rem;color:var(--c-green)">● Ativo</span>
+        </div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:100%;background:var(--c-green)"></div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <input class="busca" id="q" type="search" placeholder="Buscar por nº Conlicitação (vírgula para vários), pregão, órgão, objeto, fabricante…" />
+        <div class="ufbox">
+          <button type="button" id="btnUf" class="ufbtn">
+            <span id="ufResumo">Todos os estados</span> <span style="opacity:.6">▾</span>
+          </button>
+          <div class="ufmenu" id="ufMenu">
+            <div class="ufacoes">
+              <button type="button" class="b-sm" id="ufPreset"></button>
+              <button type="button" class="b-sm" id="ufLimpar">Limpar</button>
+            </div>
+            <div id="ufLista"></div>
+          </div>
+        </div>
+        <label class="chk"><input type="checkbox" id="fOcultarVenc" checked /> Ocultar pregões vencidos</label>
+        <label class="chk"><input type="checkbox" id="fOcultarEnv" /> Ocultar já enviados</label>
+      </div>
+
+      <div class="row" id="chipsFaixa">
+        <button class="fchip on" data-f="all">Todas <span class="n" id="cntAll">0</span></button>
+        <button class="fchip" data-f="Alta">Parceiros ENTERPRISECORE <span class="n" id="cntAlta">0</span></button>
+        <button class="fchip" data-f="Concorrente">Concorrentes <span class="n" id="cntConc">0</span></button>
+        <button class="fchip" data-f="Média">Escopo Geral <span class="n" id="cntMed">0</span></button>
+        <button class="fchip" data-f="Baixa">Baixa Confiança <span class="n" id="cntBax">0</span></button>
+      </div>
+
+      <div class="row" style="margin-top:14px;border-top:1px solid #1f2530;padding-top:14px">
+        <span style="font-size:12px;color:var(--c-gray-muted)">📁 Pasta de boletins: <code id="bdir" style="color:var(--c-white);font-family:'JetBrains Mono',monospace">data/boletins</code></span>
+        <button class="b-sm b-gho" id="btnPasta" type="button">Abrir pasta</button>
+        <label class="chk" style="margin-left:6px" id="lblSomar">
+          <input type="checkbox" id="somar"> Somar ao histórico
+        </label>
+        <button class="b-sm b-ok" id="btnProc" type="button" style="margin-left:auto">Processar boletins</button>
+        <button class="b-sm b-pri" id="btnDownloadExcel" type="button">Baixar planilha (.xlsx)</button>
+        <a class="b-sm b-gho" href="/manual/boletins-uso" target="_blank" rel="noopener">📄 Manual de Uso</a>
+        <a class="b-sm b-gho" href="/manual/boletins-construcao" target="_blank" rel="noopener">📘 Manual de Construção</a>
+        <span id="procStatus" style="font-size:12px;color:var(--c-gray-muted)"></span>
+      </div>
+    </div>
+
+    <div class="stats" id="stats" style="font-size:12.5px;color:var(--c-gray-muted);margin-bottom:12px"></div>
+    <div class="lista" id="grid"></div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MÓDULO 2: PAINEL DE ROs (STREAMLIT / BITRIX24)                        -->
+  <!-- ===================================================================== -->
+  <div id="modScr" style="display:none">
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:1px solid #1f2530;padding-bottom:12px;flex-wrap:wrap;gap:10px">
+        <div>
+          <h2 style="margin:0;font-size:1.25rem;color:var(--c-white)">Painel de Gestão de ROs (Bitrix24)</h2>
+          <span style="font-size:0.85rem;color:var(--c-gray-muted)">Status do Servidor: <b id="painelStatus" style="color:var(--c-green)">Verificando…</b></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <a class="b-sm b-gho" href="/manual/ros-uso" target="_blank" rel="noopener">📄 Manual de Uso</a>
+          <a class="b-sm b-gho" href="/manual/ros-construcao" target="_blank" rel="noopener">📘 Manual de Construção</a>
+          <button class="b-sm b-ok" id="btnSubirPainel" type="button">Abrir Painel Streamlit</button>
+          <button class="b-sm b-pri" id="btnNovaAbaPainel" type="button">Abrir em Nova Aba</button>
+          <button class="b-sm b-gho" id="btnPararPainel" type="button">Parar</button>
+        </div>
+      </div>
+      
+      <div id="painelAviso" style="padding:40px 20px;text-align:center;color:var(--c-gray-muted);background:var(--c-black-well);border-radius:6px;border:1px solid #1f2530;box-shadow:var(--shadow-inset)">
+        Clique em <b>Abrir Painel Streamlit</b> para carregar o painel integrado de ROs.
+      </div>
+      
+      <iframe id="painelFrame" src="http://localhost:8501" style="width:100%;height:calc(100vh - 240px);border:1px solid var(--c-gray-border);border-radius:6px;background:#fff;display:none"></iframe>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- MÓDULO 3: RADAR DE PREGÕES 24/7 (SALA DE DISPUTA & CHAT)              -->
+  <!-- ===================================================================== -->
+  <div id="modVigilancia" style="display:none">
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span class="kpi-card-title">Pregões no Radar</span>
+          <span class="kpi-card-count" id="vigTotal">0</span>
+        </div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span class="kpi-card-title">Movimentação Não Lida</span>
+          <span class="kpi-card-count" style="color:var(--c-red)" id="vigMudou">0</span>
+        </div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:0%;background:var(--c-red)"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span class="kpi-card-title">Valor Estimado Somado</span>
+          <span class="kpi-card-count" style="color:var(--c-white)" id="vigValor">R$ 0</span>
+        </div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:85%"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card-header">
+          <span class="kpi-card-title">Vigilância 24/7</span>
+          <span class="kpi-card-count" style="font-size:0.95rem;color:var(--c-green)" id="vigUltima">● Ativa (a cada 1 min)</span>
+        </div>
+        <div class="kpi-bar-track"><div class="kpi-bar-fill" style="width:100%;background:var(--c-green)"></div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;border-bottom:1px solid #1f2530;padding-bottom:12px;gap:12px;flex-wrap:wrap">
+        <div>
+          <h2 style="margin:0;font-size:1.25rem;color:var(--c-white)">Radar de Pregões &bull; Sala de Disputa e Atos Oficiais</h2>
+          <span style="font-size:0.85rem;color:var(--c-gray-muted)">Vigilância ativa nos portais Compras.gov (PNCP), Licitações-e (BB) e Portal de Compras Públicas. Alertas automáticos por e-mail.</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <a class="b-sm b-gho" href="/manual/pregoes-uso" target="_blank" rel="noopener">📄 Manual de Uso</a>
+          <a class="b-sm b-gho" href="/manual/pregoes-construcao" target="_blank" rel="noopener">📘 Manual de Construção</a>
+          <button class="b-pri b-sm" id="btnChecarStatusVig" type="button">Varredura Imediata</button>
+          <button class="b-sec b-sm" id="btnDispararAlertasTodos" type="button">✉️ Enviar Alertas por E-mail</button>
+        </div>
+      </div>
+
+      <!-- Formulário de Cadastro Expansível -->
+      <details style="background:var(--c-black-well);border:1px solid #1f2530;border-radius:6px;padding:14px 16px;margin-bottom:14px;box-shadow:var(--shadow-inset)" id="detCadastroVig">
+        <summary style="font-weight:700;color:var(--c-white);cursor:pointer;font-size:13px">+ Cadastrar Novo Pregão no Radar &amp; Responsáveis</summary>
+        <div style="margin-top:14px">
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+            <button type="button" class="fchip on" id="pCompras" data-portal="comprasgov">Compras.gov.br (PNCP)</button>
+            <button type="button" class="fchip" id="pBB" data-portal="licitacoes-e">Licitações-e (Banco do Brasil)</button>
+            <button type="button" class="fchip" id="pPCP" data-portal="compraspublicas">Portal de Compras Públicas</button>
+          </div>
+
+          <!-- Campos Compras.gov -->
+          <div id="campoComprasgov">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:10px">
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">UASG (6 dígitos)*</span>
+                <input type="text" id="vigUasg" placeholder="ex.: 070001 (TSE)" maxlength="6">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">Número do Pregão*</span>
+                <input type="text" id="vigNumero" placeholder="ex.: 90009">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">Ano</span>
+                <input type="text" id="vigAno" value="2026" maxlength="4">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">Apelido Interno (Opcional)</span>
+                <input type="text" id="vigApelido" placeholder="ex.: TSE — SOC como Serviço">
+              </label>
+            </div>
+          </div>
+
+          <!-- Campos Licitações-e -->
+          <div id="campoBB" style="display:none">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:10px">
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">Nº Licitação BB*</span>
+                <input type="text" id="bbNumero" placeholder="ex.: 1095715">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">Órgão Comprador</span>
+                <input type="text" id="bbOrgao" placeholder="ex.: CELEPAR">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">Apelido</span>
+                <input type="text" id="bbApelido" placeholder="ex.: CELEPAR — F5 Networks">
+              </label>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:4px;margin-top:10px">
+              <span class="vlab">Objeto</span>
+              <input type="text" id="bbObjeto" placeholder="ex.: Aquisição de Solução F5 BIG-IP">
+            </label>
+          </div>
+
+          <!-- Campos Portal de Compras Públicas -->
+          <div id="campoPCP" style="display:none">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:10px">
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">Nº do Processo no PCP*</span>
+                <input type="text" id="pcpNumero" placeholder="ex.: 10000.000373/2026">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">Órgão Comprador</span>
+                <input type="text" id="pcpOrgao" placeholder="ex.: BRB SERVIÇOS S.A.">
+              </label>
+              <label style="display:flex;flex-direction:column;gap:4px">
+                <span class="vlab">Apelido</span>
+                <input type="text" id="pcpApelido" placeholder="ex.: BRB SERVIÇOS — Proc. 10000.000373/2026">
+              </label>
+            </div>
+            <label style="display:flex;flex-direction:column;gap:4px;margin-top:10px">
+              <span class="vlab">Objeto</span>
+              <input type="text" id="pcpObjeto" placeholder="ex.: Contratação de Soluções de TI">
+            </label>
+          </div>
+
+          <!-- Seleção de Responsáveis -->
+          <div style="margin-top:14px;border-top:1px solid #1f2530;padding-top:12px">
+            <span class="vlab">Destinatários dos Alertas por E-mail:</span>
+            <div id="vigResponsaveisChips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px"></div>
+            <label style="display:flex;flex-direction:column;gap:4px;margin-top:10px">
+              <span class="vlab">Outros E-mails (separados por vírgula):</span>
+              <input type="text" id="vigEmailsExtra" placeholder="ex.: henri.mafra@grupoenterprisecore.com, henrique.lessa@grupoenterprisecore.com">
+            </label>
+          </div>
+
+          <div style="margin-top:14px;display:flex;gap:8px;align-items:center">
+            <button class="b-pri" id="btnSalvarCadastroVig" type="button">Salvar no Radar</button>
+            <div id="vigErro" style="display:none;color:var(--c-red-txt);font-size:12px;font-weight:600"></div>
+          </div>
+        </div>
+      </details>
+
+      <!-- Layout Dividido (Sidebar de Pregões + Painel de Detalhes e Chat) -->
+      <div class="vig-split">
+        <div class="vig-list-col" id="vigListaPregoes"></div>
+        <div class="vig-detail-panel" id="vigPainelDetalhes">
+          <div class="vazio" style="padding:60px 20px;text-align:center;color:var(--c-gray-muted)">Carregando pregões acompanhados…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Compositor de Envio Fixo (Barra Inferior) -->
+<div class="bar" id="bar">
+  <div class="barin">
+    <span class="cnt" id="barCnt">0 marcadas</span>
+    <button class="b-sm b-gho" id="btnSelAll" type="button">Marcar Visíveis</button>
+    <button class="b-sm b-gho" id="btnDeselAll" type="button">Desmarcar</button>
+    <select id="selTo" style="min-width:210px"><option value="">— Destinatário (Para) —</option></select>
+    <button class="b-sm b-ok" id="btnSendDirect" type="button">Abrir no Outlook</button>
+    <button class="b-sm b-pri" id="btnExportSel" type="button">Exportar Excel Selecionadas</button>
+    <button class="b-sm b-pri" id="btnDownloadOftBar" type="button">Baixar Modelo (.OFT)</button>
+    <button class="b-sm b-gho" id="btnCopiarPromptIA" type="button">Copiar Contexto p/ IA</button>
+    <button class="b-sm b-gho" id="btnPrevBar" type="button">Prévia</button>
+  </div>
+</div>
+
+<!-- Modal Prévia de E-mail -->
+<dialog id="dlgPrev">
+  <div class="dlgh">Prévia do E-mail / Modelo (.OFT)</div>
+  <div class="dlgb">
+    <div class="fld">
+      <span class="vlab">Assunto:</span>
+      <input type="text" id="dlgSubj" readonly style="width:100%" />
+    </div>
+    <div class="fld">
+      <span class="vlab">Corpo Formatado:</span>
+      <iframe id="dlgFrame" style="width:100%;height:320px;border:1px solid var(--c-gray-border);border-radius:6px;background:#fff"></iframe>
+    </div>
+  </div>
+  <div class="dlgf">
+    <button class="b-gho" id="dlgClose" type="button">Fechar</button>
+    <button class="b-pri" id="dlgOft" type="button">Baixar Modelo (.OFT)</button>
+    <button class="b-ok" id="dlgSend" type="button">Abrir no Outlook</button>
+  </div>
+</dialog>
+
+<!-- Modal Editar Responsáveis do Pregão -->
+<dialog id="dlgEditarResponsaveis" style="max-width:560px">
+  <div class="dlgh">Gerenciar Lista de Responsáveis pelo Pregão</div>
+  <div class="dlgb">
+    <div style="font-size:12.5px;color:var(--c-gray-muted)" id="dlgRespPregaoNome">Selecione quem receberá alertas por e-mail quando houver novidades neste certame:</div>
+    <div id="dlgRespChips" style="display:flex;gap:6px;flex-wrap:wrap;max-height:200px;overflow-y:auto;padding:8px 0"></div>
+    <label style="display:flex;flex-direction:column;gap:4px">
+      <span class="vlab">Outros E-mails (separados por vírgula):</span>
+      <input type="text" id="dlgRespExtraEmails" placeholder="ex.: henri.mafra@grupoenterprisecore.com, henrique.lessa@grupoenterprisecore.com">
+    </label>
+  </div>
+  <div class="dlgf">
+    <button class="b-gho" id="dlgRespClose" type="button">Cancelar</button>
+    <button class="b-pri" id="dlgRespSalvar" type="button">Salvar Responsáveis</button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const S = {
+  licitacoes: [],
+  contatos: [],
+  enviados: new Set(),
+  sel: new Set(),
+  ufs: new Set(),
+  fFaixa: 'all',
+  escopo: {},
+  vig: [],
+  vigSelId: null,
+  portalCad: 'comprasgov',
+  painelUrl: ''
+};
+
+const $ = s => document.querySelector(s);
+const esc = t => (t == null ? '' : String(t)).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+const norm = t => (t || '').toString().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+const normBusca = t => norm(t).replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+const soDigitos = t => (t || '').toString().replace(/\D+/g, '');
+const brl = v => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+
+const fmtD = iso => {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || '');
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : '';
+};
+const dtHora = iso => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? String(iso) : d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+};
+const dtHoraSegundos = iso => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return isNaN(d) ? String(iso) : d.toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+};
+const horaMinutoSegundo = iso => {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return isNaN(d) ? String(iso) : d.toLocaleTimeString('pt-BR', {
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  });
+};
+
+function siglaUf(estado) {
+  const m = /\(([A-Z]{2})\)\s*$/.exec(String(estado || '').trim());
+  return m ? m[1] : String(estado || '').trim().toUpperCase();
+}
+
+function indiceDe(x){
+  if(x.__idx) return x.__idx;
+  const texto = normBusca([x.orgao, x.objeto, x.fabricanteSugerido, x.solucao,
+                           x.numeroPregao, x.uasg, x.estado, x.numeroConlicitacao].join(' '));
+  const ids = [x.numeroConlicitacao, x.numeroPregao, x.uasg, x.id]
+    .map(soDigitos).filter(d => d.length >= 3);
+  x.__idx = { texto, ids };
+  return x.__idx;
+}
+
+function casaBusca(x, q, qDig, soNum){
+  if(!q) return true;
+  const ix = indiceDe(x);
+  if(soNum) return ix.ids.some(d => d.includes(qDig));
+  if(qDig) return (' ' + ix.texto + ' ').includes(' ' + q + ' ');
+  return ix.texto.includes(q);
+}
+
+/* ================= ABA NAVIGATION ================= */
+function setModulo(mod) {
+  const isPub = mod === 'pub';
+  const isScr = mod === 'scr';
+  const isVig = mod === 'vig';
+  
+  if ($('#modPublicacoes')) $('#modPublicacoes').style.display = isPub ? 'block' : 'none';
+  if ($('#modScr')) $('#modScr').style.display = isScr ? 'block' : 'none';
+  if ($('#modVigilancia')) $('#modVigilancia').style.display = isVig ? 'block' : 'none';
+  
+  if ($('#btnModPub')) $('#btnModPub').classList.toggle('active', isPub);
+  if ($('#btnModScr')) $('#btnModScr').classList.toggle('active', isScr);
+  if ($('#btnModVig')) $('#btnModVig').classList.toggle('active', isVig);
+
+  if (isVig) carregarVigilancia();
+  if (isScr) verificarPainel(true);
+}
+
+document.querySelectorAll('[data-mod]').forEach(b => {
+  b.addEventListener('click', () => setModulo(b.dataset.mod));
+});
+
+/* ================= CARGA MÓDULO 1: BOLETINS ================= */
+async function carregar(){
+  try {
+    const [d, c, e, escopoRes] = await Promise.all([
+      fetch('/api/dados').then(r => r.json()),
+      fetch('/api/contatos').then(r => r.json()),
+      fetch('/api/enviados').then(r => r.json()),
+      fetch('/api/escopo').then(r => r.json()).catch(() => ({}))
+    ]);
+    S.licitacoes = d.licitacoes || [];
+    S.contatos = c.pessoas || [];
+    S.enviados = new Set(e.ids || []);
+    S.escopo = escopoRes || {};
+
+    if ($('#fonte')) $('#fonte').textContent = (d.fonte === 'real' ? 'Dados Conlicitação' : 'Exemplo') + (d.geradoEm ? ' · ' + fmtD(d.geradoEm) : '');
+    if (d.boletinsDir && $('#bdir')) $('#bdir').textContent = d.boletinsDir.replace(/\\/g, '/');
+
+    montarEstados();
+    if ($('#selTo')) {
+      $('#selTo').innerHTML = '<option value="">— Destinatário (Para) —</option>' + S.contatos.map(p => `<option value="${esc(p.email)}">${esc(p.nome)}</option>`).join('');
+    }
+    render();
+    montarChipsResponsaveis();
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function filtradas(){
+  const bruto = $('#q') ? $('#q').value : '';
+  const termosMulti = (bruto.includes(',') || bruto.includes(';'))
+    ? bruto.split(/[,;]+/).map(t => t.trim()).filter(Boolean)
+    : null;
+  const ocV = $('#fOcultarVenc') ? $('#fOcultarVenc').checked : false;
+  const ocE = $('#fOcultarEnv') ? $('#fOcultarEnv').checked : false;
+  return S.licitacoes.filter(x => {
+    if(S.fFaixa !== 'all' && norm(x.confianca) !== norm(S.fFaixa)) return false;
+    if(S.ufs.size && !S.ufs.has(x.estado)) return false;
+    if(ocV && x.vencido) return false;
+    if(ocE && S.enviados.has(x.id)) return false;
+    if(termosMulti && termosMulti.length > 1){
+      return termosMulti.some(termo => {
+        const qt = normBusca(termo), qtDig = soDigitos(termo);
+        const stNum = qtDig.length >= 4 && !/[a-z]/.test(qt);
+        return casaBusca(x, qt, qtDig, stNum);
+      });
+    }
+    const q = normBusca(bruto), qDig = soDigitos(bruto);
+    const soNum = qDig.length >= 4 && !/[a-z]/.test(q);
+    if(!casaBusca(x, q, qDig, soNum)) return false;
+    return true;
+  });
+}
+
+function render(){
+  const rows = filtradas();
+  const cA = f => S.licitacoes.filter(y => norm(y.confianca) === norm(f)).length;
+  
+  if ($('#cntAll')) $('#cntAll').textContent = S.licitacoes.length;
+  if ($('#cntAllTop')) $('#cntAllTop').textContent = S.licitacoes.length;
+  if ($('#cntAltaTop')) $('#cntAltaTop').textContent = cA('Alta');
+  if ($('#cntConcTop')) $('#cntConcTop').textContent = cA('Concorrente');
+  if ($('#cntAlta')) $('#cntAlta').textContent = cA('Alta');
+  if ($('#cntConc')) $('#cntConc').textContent = cA('Concorrente');
+  if ($('#cntMed')) $('#cntMed').textContent = cA('Média');
+  if ($('#cntBax')) $('#cntBax').textContent = cA('Baixa');
+
+  const vencidos = S.licitacoes.filter(y => y.pregaoVencido).length;
+  if ($('#stats')) {
+    $('#stats').innerHTML = `<span>Exibindo <b>${rows.length}</b> de ${S.licitacoes.length} oportunidades</span> &bull; 
+      <span>Parceiros: <b>${cA('Alta')}</b></span> &bull; 
+      <span>Concorrentes: <b>${cA('Concorrente')}</b></span> &bull; 
+      <span>Geral: <b>${cA('Média')}</b></span> &bull; 
+      <span>Baixa: <b>${cA('Baixa')}</b></span>
+      ${vencidos ? ` &bull; <span style="color:var(--c-red)">⏳ <b>${vencidos}</b> pregões vencidos</span>` : ''}`;
+  }
+
+  if(!rows.length){
+    if ($('#grid')) $('#grid').innerHTML = '<div style="text-align:center;padding:50px;color:var(--c-gray-muted)">Nenhuma oportunidade encontrada com os filtros selecionados.</div>';
+    return;
+  }
+
+  if ($('#grid')) {
+    $('#grid').innerHTML = rows.map((x, idx) => {
+      const selc = S.sel.has(x.id), jaEnv = S.enviados.has(x.id);
+      const score = x.score != null ? x.score : (x.confianca === 'Alta' ? 85 : x.confianca === 'Média' ? 60 : 30);
+      const isAlta = score >= 75 || norm(x.confianca) === 'alta';
+      const corFaixa = isAlta ? 'var(--c-green)' : 'var(--c-white)';
+      const objTexto = x.objeto || '';
+
+      return `<div class="card ${selc?'sel':''} ${x.pregaoVencido?'venc':''}" data-id="${esc(x.id)}">
+        <div class="chead">
+          <label style="cursor:pointer;padding-top:2px"><input type="checkbox" class="rowchk" ${selc?'checked':''}></label>
+          <span class="pos">#${idx+1}</span>
+          <div class="cmain">
+            <div class="orgao">${esc(x.orgao)}</div>
+            <div class="meta">
+              <span>📍 ${esc(x.estado||'BR')}</span>
+              <span>UASG: <b>${esc(x.uasg||'N/I')}</b></span>
+              <span>Pregão: <b>${esc(fmtD(x.dataPregao)||'N/I')} ${esc(x.horaPregao||'')}</b></span>
+              <span>Nº: <b>${esc(x.numeroPregao||'N/I')}</b></span>
+              <span>Conlicitação: <b>${esc(x.numeroConlicitacao||'N/I')}</b></span>
+            </div>
+          </div>
+          <div class="scorebox">
+            <div class="snum" style="color:${corFaixa}">${score}</div>
+            <div class="sfaixa" style="color:${corFaixa}">${esc(x.confianca||'GERAL')}</div>
+            <div class="sbar"><i style="width:${Math.min(100, Math.max(0, score))}%;background:${corFaixa}"></i></div>
+            <div class="stec">Técnica: <b>${x.scoreTecnico != null ? x.scoreTecnico : score}</b></div>
+          </div>
+        </div>
+
+        <div class="objeto ${objTexto.length > 280 ? 'trunc' : ''}">${esc(objTexto)}</div>
+        ${objTexto.length > 280 ? '<button class="vermais" type="button">ver objeto completo</button>' : ''}
+
+        <div class="chips">
+          <span class="chip ${isAlta ? 'p' : 's'}">Solução: ${esc(x.solucao||'Cibersegurança / Redes')}</span>
+          ${x.fabricanteSugerido ? `<span class="chip c">Marca: ${esc(x.fabricanteSugerido)}</span>` : ''}
+          ${x.pregaoVencido ? '<span class="chip v">⏳ PREGÃO VENCIDO</span>' : ''}
+          ${jaEnv ? '<span class="chip" style="background:#1e2530;border-color:#475569;color:#ffffff">JÁ ENVIADO</span>' : ''}
+          <a class="b-sm b-gho" href="https://consulteonline.conlicitacao.com.br/banco_de_dados" target="_blank" rel="noopener" style="margin-left:auto">Abrir no Conlicitação &rarr;</a>
+          ${x.link ? `<a class="b-sm b-gho" href="${esc(x.link)}" target="_blank" rel="noopener">Edital</a>` : ''}
+        </div>
+
+        ${Array.isArray(x.pontos) && x.pontos.length ? `
+        <details class="pq">
+          <summary>Como esta nota foi formada (${x.pontos.length} evidências)</summary>
+          <div class="pqlist">
+            ${x.pontos.map(p => `<div class="pqrow"><span class="pqpts ${p.pts>=0?'pos':'neg'}">${p.pts>=0?'+':''}${p.pts}</span><span class="pqsin" style="font-weight:700;color:var(--c-gray-muted)">${esc(p.sinal)}:</span><span class="pqdet" style="color:var(--c-gray-light)">${esc(p.detalhe)}</span></div>`).join('')}
+          </div>
+        </details>` : ''}
+      </div>`;
+    }).join('');
+
+    document.querySelectorAll('.rowchk').forEach(k => k.addEventListener('change', ev => {
+      const id = ev.target.closest('.card').dataset.id;
+      ev.target.checked ? S.sel.add(id) : S.sel.delete(id);
+      syncBar();
+    }));
+  }
+  syncBar();
+}
+
+function syncBar(){
+  const n = S.sel.size;
+  if ($('#barCnt')) $('#barCnt').textContent = n + ' selecionada(s)';
+  if ($('#bar')) $('#bar').classList.toggle('on', n > 0);
+}
+
+/* Objeto Expansível */
+document.addEventListener('click', ev => {
+  const b = ev.target.closest && ev.target.closest('.vermais');
+  if (!b) return;
+  const o = b.previousElementSibling;
+  if (!o || !o.classList.contains('objeto')) return;
+  const fechado = o.classList.toggle('trunc');
+  b.textContent = fechado ? 'ver objeto completo' : 'recolher objeto';
+});
+
+/* Filtro de Estados */
+function montarEstados() {
+  const cont = {};
+  S.licitacoes.forEach(x => { if (x.estado) cont[x.estado] = (cont[x.estado] || 0) + 1; });
+  const lista = Object.keys(cont).sort();
+
+  if ($('#ufLista')) {
+    $('#ufLista').innerHTML = lista.map(u => `
+      <label class="ufitem" title="${esc(u)} — ${cont[u]} licitações">
+        <input type="checkbox" value="${esc(u)}" ${S.ufs.has(u) ? 'checked' : ''}>
+        <span>${esc(u)}</span><span class="n">${cont[u]}</span>
+      </label>`).join('') || '<div style="color:var(--c-gray-muted);font-size:12px">Nenhum estado nos dados</div>';
+
+    $('#ufLista').querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => {
+      if (cb.checked) S.ufs.add(cb.value); else S.ufs.delete(cb.value);
+      resumoEstados(); render();
+    }));
+  }
+
+  const pref = (S.escopo || {}).estadosPreferidos;
+  const bt = $('#ufPreset');
+  if (bt && pref && Array.isArray(pref.ufs) && pref.ufs.length) {
+    const alvo = lista.filter(u => pref.ufs.includes(siglaUf(u)));
+    bt.style.display = '';
+    bt.textContent = `${pref.nome} (${pref.ufs.join(', ')})`;
+    bt.disabled = !alvo.length;
+    bt.onclick = () => { S.ufs = new Set(alvo); montarEstados(); resumoEstados(); render(); };
+  } else if (bt) { bt.style.display = 'none'; }
+
+  resumoEstados();
+}
+
+function resumoEstados() {
+  const n = S.ufs.size;
+  const el = $('#ufResumo');
+  if (!el) return;
+  if (!n) el.textContent = 'Todos os estados';
+  else if (n === 1) el.textContent = [...S.ufs][0];
+  else el.textContent = `${n} estados selecionados`;
+  if ($('#btnUf')) $('#btnUf').classList.toggle('ativo', n > 0);
+}
+
+if ($('#btnUf')) {
+  $('#btnUf').addEventListener('click', ev => {
+    ev.stopPropagation();
+    if ($('#ufMenu')) $('#ufMenu').classList.toggle('on');
+  });
+}
+if ($('#ufLimpar')) {
+  $('#ufLimpar').addEventListener('click', () => {
+    S.ufs.clear(); montarEstados(); render();
+  });
+}
+document.addEventListener('click', ev => {
+  const m = $('#ufMenu');
+  if (m && m.classList.contains('on') && !m.contains(ev.target) && ev.target !== $('#btnUf')) {
+    m.classList.remove('on');
+  }
+});
+
+/* Chips de Faixa */
+document.querySelectorAll('#chipsFaixa .fchip').forEach(b => {
+  b.addEventListener('click', () => {
+    S.fFaixa = b.dataset.f;
+    document.querySelectorAll('#chipsFaixa .fchip').forEach(x => x.classList.toggle('on', x === b));
+    render();
+  });
+});
+
+/* Listeners de Busca e Ações */
+if ($('#q')) $('#q').addEventListener('input', render);
+if ($('#fOcultarVenc')) $('#fOcultarVenc').addEventListener('change', render);
+if ($('#fOcultarEnv')) $('#fOcultarEnv').addEventListener('change', render);
+if ($('#btnSelAll')) $('#btnSelAll').addEventListener('click', () => { filtradas().forEach(x => S.sel.add(x.id)); render(); });
+if ($('#btnDeselAll')) $('#btnDeselAll').addEventListener('click', () => { S.sel.clear(); render(); });
+if ($('#btnDownloadExcel')) $('#btnDownloadExcel').addEventListener('click', () => { window.location.href = '/api/download-excel'; });
+if ($('#btnPasta')) $('#btnPasta').addEventListener('click', async () => { await fetch('/api/abrir-pasta', { method:'POST' }); toast('Pasta de boletins aberta no Windows Explorer.', 'info'); });
+
+if ($('#btnProc')) {
+  $('#btnProc').addEventListener('click', async () => {
+    const somar = $('#somar') ? $('#somar').checked : false, b = $('#btnProc');
+    b.disabled = true; b.textContent = 'Processando…';
+    try {
+      const r = await fetch('/api/processar', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ somar }) }).then(r => r.json());
+      if(r.ok){ toast('Boletins processados com sucesso!', 'ok'); await carregar(); }
+      else toast('Erro ao processar: ' + (r.erro || ''), 'err');
+    } catch(e) { toast('Erro: ' + e.message, 'err'); }
+    b.disabled = false; b.textContent = 'Processar boletins';
+  });
+}
+
+/* Envio Direto via Outlook */
+if ($('#btnSendDirect')) {
+  $('#btnSendDirect').addEventListener('click', async () => {
+    const ids = [...S.sel];
+    if(!ids.length) return toast('Selecione ao menos 1 licitação.', 'warn');
+    const to = $('#selTo') ? $('#selTo').value : '';
+    if(!to) return toast('Selecione o destinatário (Para) no seletor.', 'warn');
+    toast('Abrindo e-mail no Outlook...', 'info');
+    try {
+      const res = await fetch('/api/enviar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids, to })
+      }).then(r => r.json());
+      if (res.ok) {
+        toast('E-mail pronto aberto no Outlook!', 'ok');
+        ids.forEach(id => S.enviados.add(id));
+        render();
+      } else {
+        toast('Erro ao abrir no Outlook: ' + (res.erro || ''), 'err');
+      }
+    } catch (e) {
+      toast('Erro: ' + e.message, 'err');
+    }
+  });
+}
+
+/* Exportar Selecionadas */
+if ($('#btnExportSel')) {
+  $('#btnExportSel').addEventListener('click', async () => {
+    const ids = [...S.sel];
+    if(!ids.length) return toast('Selecione ao menos 1 licitação.', 'warn');
+    toast('Gerando planilha...', 'info');
+    try {
+      const res = await fetch('/api/exportar-selecionados', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ ids }) });
+      if(res.ok){
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `Planilha-ENTERPRISECORE-Selecionadas.xlsx`; a.click();
+        URL.revokeObjectURL(url);
+        toast('Planilha exportada com sucesso!', 'ok');
+      }
+    } catch(e) { toast('Erro: ' + e.message, 'err'); }
+  });
+}
+
+const acaoBaixarOft = async () => {
+  const ids = [...S.sel];
+  if(!ids.length) return toast('Selecione ao menos 1 licitação.', 'warn');
+  const to = $('#selTo') ? $('#selTo').value : '';
+  toast('Gerando Modelo .OFT...', 'info');
+  try {
+    // O servidor sempre devolve um .zip com 2 pastas: "Radar de Publicacoes"
+    // (1 e-mail unico com os selecionados da "Minha regiao") e "Individuais"
+    // (1 e-mail por licitacao selecionada).
+    const res = await fetch('/api/gerar-oft', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ ids, to }) });
+    if(res.ok){
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'Modelos-ENTERPRISECORE.zip'; a.click();
+      URL.revokeObjectURL(url);
+      toast('Modelo .OFT gerado com sucesso!', 'ok');
+    }
+  } catch(e) { toast('Erro: ' + e.message, 'err'); }
+};
+if ($('#btnDownloadOftBar')) $('#btnDownloadOftBar').addEventListener('click', acaoBaixarOft);
+
+if ($('#btnCopiarPromptIA')) {
+  $('#btnCopiarPromptIA').addEventListener('click', () => {
+    const selected = S.licitacoes.filter(x => S.sel.has(x.id));
+    if(!selected.length) return toast('Selecione ao menos 1 licitação.', 'warn');
+    const promptText = `PROMPT DE ANÁLISE DE LICITAÇÕES ENTERPRISECORE\nTotal de licitações selecionadas: ${selected.length}\n` + selected.map(x => `Órgão: ${x.orgao}\nObjeto: ${x.objeto}\n`).join('\n---\n');
+    navigator.clipboard.writeText(promptText).then(() => toast('Contexto copiado para a área de transferência!', 'ok'));
+  });
+}
+
+/* Modal Prévia */
+if ($('#btnPrevBar')) {
+  $('#btnPrevBar').addEventListener('click', async () => {
+    const ids = [...S.sel];
+    if(!ids.length) return toast('Selecione ao menos 1 licitação.', 'warn');
+    const res = await fetch('/api/previa-email', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ ids, assunto: `Radar ENTERPRISECORE (${ids.length} itens)` }) });
+    const html = await res.text();
+    if ($('#dlgSubj')) $('#dlgSubj').value = `Radar ENTERPRISECORE (${ids.length} itens)`;
+    if ($('#dlgFrame')) $('#dlgFrame').srcdoc = html;
+    if ($('#dlgPrev')) $('#dlgPrev').showModal();
+  });
+}
+if ($('#dlgClose')) $('#dlgClose').addEventListener('click', () => $('#dlgPrev').close());
+if ($('#dlgOft')) $('#dlgOft').addEventListener('click', acaoBaixarOft);
+if ($('#dlgSend')) {
+  $('#dlgSend').addEventListener('click', async () => {
+    const ids = [...S.sel];
+    const to = $('#selTo') ? $('#selTo').value : '';
+    if(!to) return toast('Selecione o destinatário (Para) no seletor.', 'warn');
+    try {
+      const res = await fetch('/api/enviar', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids, to })
+      }).then(r => r.json());
+      if (res.ok) {
+        toast('Aberto no Outlook!', 'ok');
+        $('#dlgPrev').close();
+        ids.forEach(id => S.enviados.add(id));
+        render();
+      } else {
+        toast('Erro ao abrir no Outlook: ' + (res.erro || ''), 'err');
+      }
+    } catch(e) { toast('Erro: ' + e.message, 'err'); }
+  });
+}
+
+/* ================= MÓDULO 2: PAINEL DE ROs (STREAMLIT) ================= */
+async function verificarPainel(mostrarSeNoAr) {
+  try {
+    const r = await fetch('/api/painel-status').then(x => x.json());
+    S.painelUrl = r.url || 'http://localhost:8501';
+    const el = $('#painelStatus');
+    if (el) {
+      el.textContent = r.rodando ? '● No ar (Porta 8501)' : '○ Parado';
+      el.style.color = r.rodando ? 'var(--c-green)' : 'var(--c-gray-muted)';
+    }
+    if (r.rodando && mostrarSeNoAr) {
+      mostrarPainel(r.url || 'http://localhost:8501');
+    } else if (!r.rodando) {
+      if ($('#painelAviso')) $('#painelAviso').style.display = 'block';
+      if ($('#painelFrame')) $('#painelFrame').style.display = 'none';
+    }
+    return r.rodando;
+  } catch (e) { return false; }
+}
+
+function mostrarPainel(url) {
+  const f = $('#painelFrame');
+  if (!f) return;
+  if (f.src !== url) f.src = url;
+  f.style.display = 'block';
+  if ($('#painelAviso')) $('#painelAviso').style.display = 'none';
+}
+
+if ($('#btnSubirPainel')) {
+  $('#btnSubirPainel').addEventListener('click', async () => {
+    const btn = $('#btnSubirPainel');
+    btn.disabled = true; btn.textContent = 'Iniciando…';
+    if ($('#painelAviso')) {
+      $('#painelAviso').style.display = 'block';
+      $('#painelAviso').innerHTML = 'Carregando o Painel de ROs… aguarde alguns segundos.';
+    }
+    try {
+      const r = await fetch('/api/painel-subir', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' }).then(x => x.json());
+      if (r.ok) {
+        mostrarPainel(r.url || 'http://localhost:8501');
+        verificarPainel(false);
+        toast('Painel de ROs carregado!', 'ok');
+      } else {
+        toast('Erro ao abrir o painel: ' + (r.erro || ''), 'err');
+      }
+    } catch (e) { toast('Erro: ' + e.message, 'err'); }
+    btn.disabled = false; btn.textContent = 'Abrir Painel Streamlit';
+  });
+}
+
+if ($('#btnNovaAbaPainel')) {
+  $('#btnNovaAbaPainel').addEventListener('click', () => {
+    window.open((S.painelUrl || 'http://localhost:8501'), '_blank');
+  });
+}
+
+if ($('#btnPararPainel')) {
+  $('#btnPararPainel').addEventListener('click', async () => {
+    await fetch('/api/painel-parar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    if ($('#painelFrame')) { $('#painelFrame').style.display = 'none'; $('#painelFrame').src = 'about:blank'; }
+    if ($('#painelAviso')) {
+      $('#painelAviso').style.display = 'block';
+      $('#painelAviso').innerHTML = 'Painel parado. Clique em <b>Abrir Painel Streamlit</b> para iniciar novamente.';
+    }
+    verificarPainel(false);
+    toast('Painel parado.', 'info');
+  });
+}
+
+/* ================= MÓDULO 3: RADAR DE PREGÕES 24/7 ================= */
+async function carregarVigilancia() {
+  try {
+    const r = await fetch('/api/acompanhados').then(x => x.json());
+    S.vig = Array.isArray(r.acompanhados) ? r.acompanhados : [];
+    S.varredura = r.varredura || {};
+  } catch (e) { S.vig = []; }
+  renderVigilancia();
+}
+
+setInterval(() => {
+  if (document.querySelector('#modVigilancia')?.style.display !== 'none') {
+    carregarVigilancia();
+  }
+}, 4000);
+
+function erroVig(msg) {
+  const el = $('#vigErro');
+  if (!el) return;
+  el.style.display = msg ? 'block' : 'none';
+  if (msg) el.innerHTML = msg;
+}
+
+document.querySelectorAll('[data-portal]').forEach(b => b.addEventListener('click', () => {
+  S.portalCad = b.dataset.portal;
+  document.querySelectorAll('[data-portal]').forEach(x => x.classList.toggle('on', x === b));
+  if ($('#campoComprasgov')) $('#campoComprasgov').style.display = S.portalCad === 'comprasgov' ? 'block' : 'none';
+  if ($('#campoBB')) $('#campoBB').style.display = S.portalCad === 'licitacoes-e' ? 'block' : 'none';
+  if ($('#campoPCP')) $('#campoPCP').style.display = S.portalCad === 'compraspublicas' ? 'block' : 'none';
+  erroVig('');
+}));
+
+function montarChipsResponsaveis() {
+  const container = $('#vigResponsaveisChips');
+  if (!container) return;
+  const lista = S.contatos || [];
+  container.innerHTML = lista.map(p => {
+    const isMarcado = (p.email || '').includes('henri.mafra') || (p.email || '').includes('henrique.lessa');
+    return `
+      <label style="display:inline-flex;align-items:center;gap:5px;background:var(--c-black-well);border:1px solid var(--c-gray-border);padding:3px 8px;border-radius:4px;font-size:11.5px;cursor:pointer;box-shadow:var(--shadow-plate)">
+        <input type="checkbox" value="${esc(p.email)}" class="chkRespCad" ${isMarcado ? 'checked' : ''}>
+        <span>${esc(p.nome.split(' ')[0] + ' ' + (p.nome.split(' ')[1] || ''))}</span>
+      </label>
+    `;
+  }).join('');
+}
+
+function coletarResponsaveisCadastro() {
+  const marcados = Array.from(document.querySelectorAll('.chkRespCad:checked')).map(cb => cb.value);
+  const extras = ($('#vigEmailsExtra') ? $('#vigEmailsExtra').value : '').split(',').map(e => e.trim()).filter(Boolean);
+  const todos = Array.from(new Set([...marcados, ...extras]));
+  return todos.length ? todos : ['henri.mafra@grupoenterprisecore.com', 'henrique.lessa@grupoenterprisecore.com'];
+}
+
+if ($('#btnSalvarCadastroVig')) {
+  $('#btnSalvarCadastroVig').addEventListener('click', async () => {
+    const btn = $('#btnSalvarCadastroVig');
+    const responsaveis = coletarResponsaveisCadastro();
+    
+    if (S.portalCad === 'licitacoes-e') {
+      const numero = $('#bbNumero').value.trim();
+      if (!numero) return erroVig('Informe o número da licitação no Licitações-e.');
+      await cadastrarVig({
+        portal: 'licitacoes-e', numero,
+        orgao: $('#bbOrgao').value.trim(), apelido: $('#bbApelido').value.trim(), objeto: $('#bbObjeto').value.trim(),
+        responsaveis
+      }, btn);
+    } else if (S.portalCad === 'compraspublicas') {
+      const numero = $('#pcpNumero').value.trim();
+      if (!numero) return erroVig('Informe o número do processo no Portal de Compras Públicas.');
+      await cadastrarVig({
+        portal: 'compraspublicas', numero,
+        orgao: $('#pcpOrgao').value.trim(), apelido: $('#pcpApelido').value.trim(), objeto: $('#pcpObjeto').value.trim(),
+        responsaveis
+      }, btn);
+    } else {
+      const uasg = $('#vigUasg').value.trim();
+      const numero = $('#vigNumero').value.trim();
+      const ano = $('#vigAno').value.trim() || '2026';
+      if (!uasg || !numero) return erroVig('Informe a UASG e o número do pregão.');
+      await cadastrarVig({
+        portal: 'comprasgov', uasg, numero, ano, apelido: $('#vigApelido').value.trim(),
+        responsaveis
+      }, btn);
+    }
+  });
+}
+
+async function cadastrarVig(corpo, btn) {
+  erroVig('');
+  btn.disabled = true; btn.textContent = 'Salvando…';
+  try {
+    const res = await fetch('/api/acompanhar', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo),
+    }).then(r => r.json());
+    if (res.ok) {
+      toast('Cadastrado no Radar.', 'ok');
+      S.vig = res.acompanhados || [];
+      renderVigilancia();
+      return true;
+    }
+    erroVig(esc(res.erro || 'Não foi possível cadastrar'));
+  } catch (e) { erroVig('Erro de conexão: ' + esc(e.message)); }
+  finally { btn.disabled = false; btn.textContent = 'Salvar no Radar'; }
+  return false;
+}
+
+if ($('#btnChecarStatusVig')) {
+  $('#btnChecarStatusVig').addEventListener('click', async () => {
+    const btn = $('#btnChecarStatusVig');
+    btn.disabled = true; btn.textContent = 'Varrendo…';
+    try {
+      const res = await fetch('/api/checar-status', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ids: [] })
+      }).then(r => r.json());
+      if (res.ok) {
+        toast(`Varredura concluída. ${res.comMudanca || 0} alteração(ões).`, 'ok');
+        await carregarVigilancia();
+      }
+    } catch (e) { toast('Erro ao varrer: ' + e.message, 'err'); }
+    btn.disabled = false; btn.textContent = 'Varredura Imediata';
+  });
+}
+
+function renderVigilancia() {
+  const list = S.vig || [];
+  const mudaram = list.filter(x => x.mudouAgora || (x.eventos && x.eventos.some(e => e.novo))).length;
+
+  if ($('#vigTotal')) $('#vigTotal').textContent = list.length;
+  if ($('#vigMudou')) $('#vigMudou').textContent = mudaram;
+  
+  const soma = list.reduce((acc, x) => acc + (Number(x.registro?.valorEstimado) || 0), 0);
+  if ($('#vigValor')) $('#vigValor').textContent = soma > 0 ? brl(soma) : 'Sigiloso';
+
+  if ($('#vigUltima')) {
+    const u = S.varredura?.ultima || list[0]?.ultimaChecagem;
+    if (u) $('#vigUltima').textContent = `● Ativa (${horaMinutoSegundo(u)})`;
+  }
+
+  const colLista = $('#vigListaPregoes');
+  const painelDet = $('#vigPainelDetalhes');
+  if (!colLista || !painelDet) return;
+
+  if (!list.length) {
+    colLista.innerHTML = `<div style="background:var(--c-gray-plate);border:1px solid var(--c-gray-border);padding:30px 16px;text-align:center;border-radius:6px;color:var(--c-gray-muted);box-shadow:var(--shadow-plate)">
+      <h4 style="color:#fff;margin:0 0 4px;font-size:13px">Nenhum pregão cadastrado</h4>
+      <p style="font-size:12px;margin:0">Cadastre um pregão acima para iniciar o monitoramento.</p>
+    </div>`;
+    painelDet.innerHTML = `<div style="padding:60px 20px;text-align:center;color:var(--c-gray-muted)">Nenhum pregão selecionado.</div>`;
+    return;
+  }
+
+  if (!S.vigSelId || !list.some(x => x.id === S.vigSelId)) {
+    S.vigSelId = list[0].id;
+  }
+
+  // 1. Coluna de Pregões
+  colLista.innerHTML = list.map(x => {
+    const g = x.registro || {};
+    const portal = x.portal || 'comprasgov';
+    const isSel = x.id === S.vigSelId;
+    const temNovos = x.mudouAgora || (x.eventos && x.eventos.some(e => e.novo));
+    const qtdNovos = (x.eventos || []).filter(e => e.novo).length;
+
+    let portalLabel = 'Compras.gov';
+    if (portal === 'licitacoes-e') portalLabel = 'Licitações-e BB';
+    else if (portal === 'compraspublicas') portalLabel = 'Compras Públicas';
+
+    let subtitulo = portal === 'comprasgov' 
+      ? `UASG ${g.unidadeCodigo || x.uasg || '—'} · Pregão ${x.numero}/${x.ano || '2026'}`
+      : (portal === 'licitacoes-e' ? `Licitação Nº ${x.numero}` : `Processo ${x.numero}`);
+
+    return `<div class="vig-card-item ${isSel ? 'sel' : ''} ${temNovos ? 'tem-novidade' : ''}" data-id="${esc(x.id)}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <span class="vig-tag-portal">${portalLabel}</span>
+        ${temNovos ? `<span class="vig-dot-novo">● ${qtdNovos > 0 ? qtdNovos + ' nova(s)' : 'Novidade'}</span>` : `<span style="font-size:11px;color:var(--c-gray-dark);font-family:'JetBrains Mono',monospace">Checado: ${horaMinutoSegundo(x.ultimaChecagem)}</span>`}
+      </div>
+      <div style="font-weight:800;font-size:13.5px;color:#fff;line-height:1.35;margin-bottom:3px">${esc(x.apelido || g.orgao || 'Pregão')}</div>
+      <div style="font-size:12px;color:var(--c-gray-muted);margin-bottom:6px">${esc(subtitulo)}</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--c-gray-muted);padding-top:6px;border-top:1px solid #1f2530">
+        <span class="chip ${temNovos ? 'v' : 's'}">${esc(g.situacao || 'Em andamento')}</span>
+        <span style="font-weight:700;color:var(--c-white);font-family:'JetBrains Mono',monospace">${Number(g.valorEstimado) > 0 ? brl(g.valorEstimado) : 'Sigiloso'}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  colLista.querySelectorAll('.vig-card-item').forEach(el => {
+    el.addEventListener('click', () => {
+      S.vigSelId = el.dataset.id;
+      renderVigilancia();
+    });
+  });
+
+  // 2. Detalhes
+  const selItem = list.find(x => x.id === S.vigSelId) || list[0];
+  const g = selItem.registro || {};
+  const portal = selItem.portal || 'comprasgov';
+  const eventos = selItem.eventos || [];
+  const resps = selItem.responsaveis || ['henri.mafra@grupoenterprisecore.com', 'henrique.lessa@grupoenterprisecore.com'];
+
+  let portalFullLabel = portal === 'licitacoes-e' ? 'Licitações-e (Banco do Brasil)' : (portal === 'compraspublicas' ? 'Portal de Compras Públicas' : 'Compras.gov.br (PNCP)');
+  let idTexto = portal === 'comprasgov' 
+    ? `Órgão: <b>${esc(g.orgao || '—')}</b> · UASG: <b>${esc(g.unidadeCodigo || selItem.uasg || '—')}</b> · Pregão Nº <b>${esc(selItem.numero)}/${esc(selItem.ano || '2026')}</b>`
+    : `Órgão: <b>${esc(g.orgao || '—')}</b> · Identificador: <b>${esc(selItem.numero)}</b>`;
+
+  painelDet.innerHTML = `
+    <div class="vig-detail-head">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap">
+        <div>
+          <div style="display:flex;gap:6px;align-items:center;margin-bottom:6px">
+            <span class="chip" style="font-weight:800">${portalFullLabel}</span>
+            <span class="chip s">${esc(g.situacao || 'Em andamento')}</span>
+          </div>
+          <h3 style="margin:0 0 3px 0;font-size:1.15rem;color:var(--c-white)">${esc(selItem.apelido || g.orgao || '')}</h3>
+          <div style="font-size:12px;color:var(--c-gray-muted)">${idTexto}</div>
+        </div>
+
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <button class="b-sm b-gho" id="btnEditarResp" data-id="${esc(selItem.id)}">Responsáveis (${resps.length})</button>
+          <button class="b-sm b-gho" id="btnMarcarLido" data-id="${esc(selItem.id)}">Marcar Lido</button>
+          <button class="b-sm b-sec" id="btnDispararAlertaItem" data-id="${esc(selItem.id)}">✉️ Disparar E-mail</button>
+          ${g.linkPortal ? `<a href="${esc(g.linkPortal)}" target="_blank" rel="noopener" class="b-sm b-pri">Abrir no Portal &rarr;</a>` : ''}
+          ${(g.arquivos || []).length ? `<a href="${esc(g.arquivos[0].url)}" target="_blank" rel="noopener" class="b-sm b-gho">Edital</a>` : ''}
+          <button class="b-sm b-gho remVigBtn" data-id="${esc(selItem.id)}" style="color:var(--c-red-txt)">Remover</button>
+        </div>
+      </div>
+
+      ${g.objeto ? `<div style="margin-top:12px;font-size:12.5px;color:var(--c-gray-light);line-height:1.55;background:var(--c-black-well);border:1px solid #1f2530;padding:10px 12px;border-radius:4px;box-shadow:var(--shadow-inset)">
+        <b style="color:#fff">Objeto:</b> ${esc(g.objeto)}
+      </div>` : ''}
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:8px;margin-top:12px">
+        <div style="background:var(--c-black-well);padding:8px 10px;border:1px solid #1f2530;border-radius:4px;box-shadow:var(--shadow-inset)">
+          <div class="vlab">Valor Estimado</div>
+          <div style="font-weight:800;color:var(--c-white);font-size:13.5px;font-family:'JetBrains Mono',monospace">${Number(g.valorEstimado) > 0 ? brl(g.valorEstimado) : 'Sigiloso'}</div>
+        </div>
+        <div style="background:var(--c-black-well);padding:8px 10px;border:1px solid #1f2530;border-radius:4px;box-shadow:var(--shadow-inset)">
+          <div class="vlab">Abertura Propostas</div>
+          <div style="font-weight:600;color:var(--c-white);font-size:12px">${g.dataAbertura ? dtHora(g.dataAbertura) : '—'}</div>
+        </div>
+        <div style="background:var(--c-black-well);padding:8px 10px;border:1px solid #1f2530;border-radius:4px;box-shadow:var(--shadow-inset)">
+          <div class="vlab">Sessão / Disputa</div>
+          <div style="font-weight:600;color:var(--c-white);font-size:12px">${g.dataEncerramento ? dtHora(g.dataEncerramento) : '—'}</div>
+        </div>
+        <div style="background:var(--c-black-well);padding:8px 10px;border:1px solid #1f2530;border-radius:4px;box-shadow:var(--shadow-inset)">
+          <div class="vlab">Última Checagem 24/7</div>
+          <div style="font-weight:700;color:var(--c-green);font-size:12px;font-family:'JetBrains Mono',monospace">${dtHoraSegundos(selItem.ultimaChecagem || S.varredura?.ultima)}</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:10px 20px;font-weight:800;font-size:11.5px;color:var(--c-gray-muted);letter-spacing:0.04em;text-transform:uppercase;display:flex;justify-content:space-between;align-items:center;background:#0d1016;border-top:1px solid #1f2530;border-bottom:1px solid #1f2530">
+      <span>Histórico de Atos Oficiais & Avisos (${eventos.length})</span>
+      <span style="font-size:11px;color:var(--c-gray-dark);font-weight:400">Tag de Alerta: [B2G-RADAR-ENTERPRISECORE]</span>
+    </div>
+
+    <div class="vig-feed-box" id="vigChatFeed">
+      ${eventos.length ? eventos.slice().reverse().map(e => {
+        const isNovo = !!e.novo;
+        let autor = e.autor || 'SISTEMA';
+        if (e.texto.includes('AUTORIDADE')) autor = 'AUTORIDADE COMPETENTE';
+        else if (e.texto.includes('PREGOEIRO')) autor = 'PREGOEIRO';
+        else if (e.texto.includes('DOU')) autor = 'DIÁRIO OFICIAL (DOU)';
+        else if (e.texto.includes('DECISÃO') || e.texto.includes('RECURSO')) autor = 'DECISÃO / RECURSO';
+        else if (e.texto.includes('AVISO') || e.texto.includes('Edital')) autor = 'AVISO OFICIAL';
+        else if (e.texto.includes('PNCP')) autor = 'PNCP';
+
+        return `
+          <div class="vig-msg-entry ${isNovo ? 'novo' : ''}">
+            <div class="vig-msg-meta">
+              <span class="vig-msg-autor">
+                ${isNovo ? '<span style="color:var(--c-red);font-weight:900;margin-right:4px">● NOVO</span>' : ''}
+                ${esc(autor)}
+              </span>
+              <span class="vig-msg-data">${esc(dtHora(e.quando))}</span>
+            </div>
+            <div class="vig-msg-corpo">${esc(e.texto)}</div>
+          </div>
+        `;
+      }).join('') : `
+        <div style="padding:30px 20px;text-align:center;color:var(--c-gray-muted)">
+          Nenhum registro de evento registrado para este certame até o momento.
+        </div>
+      `}
+    </div>
+  `;
+
+  if ($('#btnEditarResp')) {
+    $('#btnEditarResp').addEventListener('click', () => {
+      $('#dlgRespPregaoNome').innerHTML = `Pregão: <b>${esc(selItem.apelido || selItem.numero)}</b><br><span style="font-size:12px;color:var(--c-gray-muted)">Selecione quem receberá alertas por e-mail:</span>`;
+      const currentResps = new Set(selItem.responsaveis || ['henri.mafra@grupoenterprisecore.com', 'henrique.lessa@grupoenterprisecore.com']);
+      const contatos = S.contatos || [];
+      
+      $('#dlgRespChips').innerHTML = contatos.map(p => `
+        <label style="display:inline-flex;align-items:center;gap:6px;background:var(--c-black-well);border:1px solid var(--c-gray-border);padding:5px 10px;border-radius:4px;font-size:12px;cursor:pointer">
+          <input type="checkbox" value="${esc(p.email)}" class="chkDlgResp" ${currentResps.has(p.email) ? 'checked' : ''}>
+          <span><b>${esc(p.nome)}</b> <small style="color:var(--c-gray-muted)">(${esc(p.email)})</small></span>
+        </label>
+      `).join('');
+
+      const extras = Array.from(currentResps).filter(email => !contatos.some(c => c.email === email));
+      $('#dlgRespExtraEmails').value = extras.join(', ');
+      $('#dlgEditarResponsaveis').showModal();
+    });
+  }
+
+  if ($('#btnMarcarLido')) {
+    $('#btnMarcarLido').addEventListener('click', async () => {
+      try {
+        const res = await fetch('/api/vigilancia-marcar-lido', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: selItem.id })
+        }).then(r => r.json());
+        if (res.ok) {
+          S.vig = res.acompanhados || S.vig;
+          toast('Marcado como lido.', 'ok');
+          renderVigilancia();
+        }
+      } catch (err) { toast('Erro ao atualizar', 'err'); }
+    });
+  }
+
+  painelDet.querySelectorAll('.remVigBtn').forEach(b => b.addEventListener('click', async ev => {
+    const res = await fetch('/api/desacompanhar', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: ev.target.dataset.id }),
+    }).then(r => r.json());
+    if (res.ok) {
+      S.vig = res.acompanhados || [];
+      S.vigSelId = S.vig.length ? S.vig[0].id : null;
+      toast('Removido do Radar.', 'info');
+      renderVigilancia();
+    }
+  }));
+}
+
+if ($('#dlgRespClose')) $('#dlgRespClose').addEventListener('click', () => $('#dlgEditarResponsaveis').close());
+if ($('#dlgRespSalvar')) {
+  $('#dlgRespSalvar').addEventListener('click', async () => {
+    const selItem = (S.vig || []).find(x => x.id === S.vigSelId);
+    if (!selItem) return;
+    const marcados = Array.from(document.querySelectorAll('.chkDlgResp:checked')).map(cb => cb.value);
+    const extras = ($('#dlgRespExtraEmails') ? $('#dlgRespExtraEmails').value : '').split(',').map(e => e.trim()).filter(Boolean);
+    const todos = Array.from(new Set([...marcados, ...extras]));
+    const responsaveis = todos.length ? todos : ['henri.mafra@grupoenterprisecore.com', 'henrique.lessa@grupoenterprisecore.com'];
+
+    try {
+      const res = await fetch('/api/vigilancia-atualizar-responsaveis', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: selItem.id, responsaveis })
+      }).then(r => r.json());
+      if (res.ok) {
+        S.vig = res.acompanhados || S.vig;
+        $('#dlgEditarResponsaveis').close();
+        toast('Responsáveis salvos!', 'ok');
+        renderVigilancia();
+      }
+    } catch (e) { toast('Erro: ' + e.message, 'err'); }
+  });
+}
+
+let toTimer;
+function toast(m, t){
+  const el = $('#toast');
+  if (!el) return;
+  el.className = 'toast on ' + (t || 'info');
+  el.textContent = m;
+  clearTimeout(toTimer);
+  toTimer = setTimeout(() => { el.className = 'toast'; }, 3500);
+}
+
+carregar().catch(e => toast('Falha ao carregar: ' + e.message, 'err'));
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+PASTA DE DADOS DO ENTERPRISECORE RADAR
+=============================
+
+Os boletins da Conlicitacao vao na SUBPASTA  data\boletins  - nao aqui.
+
+Aqui ficam os arquivos que o proprio Radar gera:
+  dados.json                      resultado do processamento
+  Planilha-ENTERPRISECORE-Licitacoes.xlsx  a planilha de 5 abas
+  enviados-log.json               historico de envios
+
+Nada disso vai para o GitHub: e dado da sua operacao.

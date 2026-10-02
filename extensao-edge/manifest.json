@@ -1,0 +1,49 @@
+{
+  "manifest_version": 3,
+  "name": "ENTERPRISECORE Radar — Sentinela de Pregões",
+  "version": "1.5.0",
+  "description": "Sincroniza automaticamente decisões de recursos, atas e andamento de pregões abertos no Compras.gov.br, Licitações-e, Compras Públicas e Compras Eletrônicas PROCERGS / RS com o ENTERPRISECORE Radar.",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ENTERPRISECORE Radar Sentinela"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.serpro.gov.br/*",
+    "https://*.comprasnet.gov.br/*",
+    "https://*.compras.gov.br/*",
+    "https://*.licitacoes-e.com.br/*",
+    "https://*.bb.com.br/*",
+    "https://*.portaldecompraspublicas.com.br/*",
+    "https://*.procergs.rs.gov.br/*",
+    "https://*.compras.rs.gov.br/*",
+    "http://localhost:8790/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.serpro.gov.br/*",
+        "https://*.comprasnet.gov.br/*",
+        "https://*.compras.gov.br/*",
+        "https://*.licitacoes-e.com.br/*",
+        "https://*.bb.com.br/*",
+        "https://*.portaldecompraspublicas.com.br/*",
+        "https://*.procergs.rs.gov.br/*",
+        "https://*.compras.rs.gov.br/*"
+      ],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

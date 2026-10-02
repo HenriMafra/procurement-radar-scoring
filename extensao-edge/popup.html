@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>ENTERPRISECORE Radar Sentinela</title>
+  <style>
+    body {
+      width: 280px;
+      margin: 0;
+      padding: 14px;
+      background: #0f172a;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 13px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #1e293b;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+    .badge-status {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+    .btn {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: none;
+      background: #0284c7;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn:hover { background: #0369a1; }
+    .footer {
+      margin-top: 14px;
+      font-size: 11px;
+      color: #64748b;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <span class="badge-status"></span>
+    <b>ENTERPRISECORE Radar</b> <span style="color:#94a3b8">Sentinela</span>
+  </div>
+  <p style="margin:0 0 10px 0;color:#94a3b8;font-size:12px">
+    Vigia abas abertas no Compras.gov.br e Licitações-e sem necessidade de recarregar a página.
+  </p>
+  <button class="btn" id="btnAbrirRadar">Abrir Painel do Radar</button>
+  <div class="footer">ENTERPRISECORE Cybersecurity • Radar 24/7</div>
+  <script src="popup.js"></script>
+</body>
+</html>
